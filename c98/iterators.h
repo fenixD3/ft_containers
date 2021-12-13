@@ -44,7 +44,8 @@ public:
     RandomAccessIterator& operator+=(const difference_type offset);
     RandomAccessIterator& operator-=(const difference_type offset);
 
-    friend difference_type operator+(const RandomAccessIterator<TType>& lhs, const RandomAccessIterator<TType>& rhs);
+    template <typename TUType>
+    friend difference_type operator+(const RandomAccessIterator<TUType>& lhs, const RandomAccessIterator<TUType>& rhs);
 
     template <typename TUType>
     friend difference_type operator-(const RandomAccessIterator<TUType>& lhs, const RandomAccessIterator<TUType>& rhs);
@@ -66,7 +67,7 @@ public:
 
 template <typename TType>
 RandomAccessIterator<TType>::RandomAccessIterator()
-    : m_Iterator(nullptr)
+    : m_Iterator(NULL)
 {}
 
 template <typename TType>
@@ -141,7 +142,6 @@ TType *RandomAccessIterator<TType>::operator->()
 template <typename TType>
 RandomAccessIterator<TType>& RandomAccessIterator<TType>::operator=(const TType& value)
 {
-    ///  TODO may be need delete value under m_Iterator
     *m_Iterator = value;
     return *this;
 }
@@ -177,21 +177,21 @@ RandomAccessIterator<TType> RandomAccessIterator<TType>::operator--(int)
 }
 
 template <typename TType>
-RandomAccessIterator<TType>& RandomAccessIterator<TType>::operator+=(const ssize_t offset)
+RandomAccessIterator<TType>& RandomAccessIterator<TType>::operator+=(const typename RandomAccessIterator::difference_type offset)
 {
     m_Iterator += offset;
     return *this;
 }
 
 template <typename TType>
-RandomAccessIterator<TType>& RandomAccessIterator<TType>::operator-=(const ssize_t offset)
+RandomAccessIterator<TType>& RandomAccessIterator<TType>::operator-=(const typename RandomAccessIterator::difference_type offset)
 {
     m_Iterator -= offset;
     return *this;
 }
 
-template <typename TType>
-typename RandomAccessIterator<TType>::difference_type operator+(const RandomAccessIterator<TType>& lhs, const RandomAccessIterator<TType>& rhs)
+template <typename TUType>
+typename RandomAccessIterator<TUType>::difference_type operator+(const RandomAccessIterator<TUType>& lhs, const RandomAccessIterator<TUType>& rhs)
 {
     return lhs.m_Iterator + rhs.m_Iterator;
 }
@@ -203,25 +203,25 @@ typename RandomAccessIterator<TUType>::difference_type operator-(const RandomAcc
 }
 
 template <typename TUType>
-RandomAccessIterator<TUType> operator+(const RandomAccessIterator<TUType>& lhs, const ssize_t rhs)
+RandomAccessIterator<TUType> operator+(const RandomAccessIterator<TUType>& lhs, const typename RandomAccessIterator<TUType>::difference_type rhs)
 {
     return lhs.m_Iterator + rhs;
 }
 
 template <typename TUType>
-RandomAccessIterator<TUType> operator-(const RandomAccessIterator<TUType>& lhs, const ssize_t rhs)
+RandomAccessIterator<TUType> operator-(const RandomAccessIterator<TUType>& lhs, const typename RandomAccessIterator<TUType>::difference_type rhs)
 {
     return lhs.m_Iterator - rhs;
 }
 
 template <typename TUType>
-RandomAccessIterator<TUType> operator+(const ssize_t lhs, const RandomAccessIterator<TUType>& rhs)
+RandomAccessIterator<TUType> operator+(const typename RandomAccessIterator<TUType>::difference_type lhs, const RandomAccessIterator<TUType>& rhs)
 {
     return rhs + lhs;
 }
 
 template <typename TUType>
-RandomAccessIterator<TUType> operator-(const ssize_t lhs, const RandomAccessIterator<TUType>& rhs)
+RandomAccessIterator<TUType> operator-(const typename RandomAccessIterator<TUType>::difference_type lhs, const RandomAccessIterator<TUType>& rhs)
 {
     return rhs - lhs;
 }

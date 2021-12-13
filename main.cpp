@@ -24,7 +24,7 @@ struct Buffer
     char buff[BUFFER_SIZE];
 };
 
-std::vector<int> v;
+std::vector<int>::iterator v;
 #define COUNT (MAX_RAM / (int)sizeof(Buffer))
 
 //template<typename T>

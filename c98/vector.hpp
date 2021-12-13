@@ -1,8 +1,10 @@
 #pragma once
 
-#include "iterators.h"
-
 #include <limits>
+#include <memory>
+
+#include "iterators.h"
+#include "algorithm.h"
 
 namespace ft
 {
@@ -158,25 +160,25 @@ typename vector<TType, TAllocator>::allocator_type vector<TType, TAllocator>::ge
 template <typename TType, typename TAllocator>
 typename vector<TType, TAllocator>::iterator vector<TType, TAllocator>::begin()
 {
-    return m_Data;
+    return iterator(m_Data);
 }
 
 template <typename TType, typename TAllocator>
 typename vector<TType, TAllocator>::const_iterator vector<TType, TAllocator>::begin() const
 {
-    return m_Data;
+    return const_iterator(m_Data);
 }
 
 template <typename TType, typename TAllocator>
 typename vector<TType, TAllocator>::iterator vector<TType, TAllocator>::end()
 {
-    return m_Data + m_Size;
+    return iterator(m_Data + m_Size);
 }
 
 template <typename TType, typename TAllocator>
 typename vector<TType, TAllocator>::const_iterator vector<TType, TAllocator>::end() const
 {
-    return m_Data + m_Size;
+    return const_iterator(m_Data + m_Size);
 }
 
 template <typename TType, typename TAllocator>
@@ -567,6 +569,48 @@ void vector<TType, TAllocator>::clear()
         m_Allocator.destroy(m_Data + i);
     }
     m_Size = 0;
+}
+
+template <class TType, class TAlloc>
+void swap(vector<TType, TAlloc>& x, vector<TType, TAlloc>& y)
+{
+    x.swap(y);
+}
+
+template <typename TType, typename TAlloc>
+bool operator==(const vector<TType,TAlloc>& lhs, const vector<TType,TAlloc>& rhs)
+{
+    return lhs.size() == rhs.size() && equal(lhs.begin(), lhs.end(), rhs.begin());
+}
+
+template <typename TType, typename TAlloc>
+bool operator!=(const vector<TType,TAlloc>& lhs, const vector<TType,TAlloc>& rhs)
+{
+    return !(lhs == rhs);
+}
+
+template <typename TType, typename TAlloc>
+bool operator<(const vector<TType,TAlloc>& lhs, const vector<TType,TAlloc>& rhs)
+{
+    return lexicographical_compare(lhs.begin(), lhs.end(), rhs.begin(), rhs.end());
+}
+
+template <typename TType, typename TAlloc>
+bool operator>(const vector<TType,TAlloc>& lhs, const vector<TType,TAlloc>& rhs)
+{
+    return rhs < lhs;
+}
+
+template <typename TType, typename TAlloc>
+bool operator<=(const vector<TType,TAlloc>& lhs, const vector<TType,TAlloc>& rhs)
+{
+    return !(rhs < lhs);
+}
+
+template <typename TType, typename TAlloc>
+bool operator>=(const vector<TType,TAlloc>& lhs, const vector<TType,TAlloc>& rhs)
+{
+    return !(lhs < rhs);
 }
 
 }

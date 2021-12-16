@@ -1,5 +1,7 @@
 #pragma once
 
+#include "iterator_traits.h"
+
 namespace ft
 {
 
@@ -8,14 +10,15 @@ class RandomAccessIterator
 {
 public:
     typedef std::size_t size_type;
-    typedef std::ptrdiff_t difference_type;
+    typedef typename iterator_traits<TType>::difference_type difference_type;
+    typedef typename iterator_traits<TType>::pointer pointer;
 
 private:
-    TType *m_Iterator;
+    pointer m_Iterator;
 
 public:
     RandomAccessIterator();
-    RandomAccessIterator(const TType *ptr);
+    RandomAccessIterator(const pointer ptr);
 
     RandomAccessIterator(const RandomAccessIterator& other);
     RandomAccessIterator& operator=(const RandomAccessIterator& other);
@@ -67,11 +70,11 @@ public:
 
 template <typename TType>
 RandomAccessIterator<TType>::RandomAccessIterator()
-    : m_Iterator(NULL)
+    : m_Iterator(pointer())
 {}
 
 template <typename TType>
-RandomAccessIterator<TType>::RandomAccessIterator(const TType *ptr)
+RandomAccessIterator<TType>::RandomAccessIterator(const pointer ptr)
     : m_Iterator(ptr)
 {}
 

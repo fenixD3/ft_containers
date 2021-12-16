@@ -21,8 +21,8 @@ public:
     typedef const typename allocator_type::const_reference const_reference;
     typedef typename allocator_type::pointer pointer;
     typedef typename allocator_type::const_pointer const_pointer;
-    typedef RandomAccessIterator<value_type> iterator;
-    typedef const RandomAccessIterator<value_type> const_iterator;
+    typedef RandomAccessIterator<pointer> iterator;
+    typedef const RandomAccessIterator<pointer> const_iterator;
 //    typedef ... reverse_iterator;
 //    typedef ... const_reverse_iterator;
 

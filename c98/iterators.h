@@ -97,7 +97,7 @@ RandomAccessIterator<TType>& RandomAccessIterator<TType>::operator=(const Random
 template <typename TType>
 bool RandomAccessIterator<TType>::operator==(const RandomAccessIterator& other) const
 {
-    return *m_Iterator == *other.m_Iterator;
+    return m_Iterator == other.m_Iterator;
 }
 
 template <typename TType>

@@ -1,7 +1,5 @@
 #pragma once
 
-#include "iterator_traits.h"
-
 namespace ft
 {
 
@@ -10,15 +8,14 @@ class RandomAccessIterator
 {
 public:
     typedef std::size_t size_type;
-    typedef typename iterator_traits<TType>::difference_type difference_type;
-    typedef typename iterator_traits<TType>::pointer pointer;
+    typedef std::ptrdiff_t difference_type;
 
 private:
-    pointer m_Iterator;
+    TType *m_Iterator;
 
 public:
     RandomAccessIterator();
-    RandomAccessIterator(const pointer ptr);
+    RandomAccessIterator(TType *ptr);
 
     RandomAccessIterator(const RandomAccessIterator& other);
     RandomAccessIterator& operator=(const RandomAccessIterator& other);
@@ -70,17 +67,17 @@ public:
 
 template <typename TType>
 RandomAccessIterator<TType>::RandomAccessIterator()
-    : m_Iterator(pointer())
+    : m_Iterator(NULL)
 {}
 
 template <typename TType>
-RandomAccessIterator<TType>::RandomAccessIterator(const pointer ptr)
+RandomAccessIterator<TType>::RandomAccessIterator(TType *ptr)
     : m_Iterator(ptr)
 {}
 
 template <typename TType>
 RandomAccessIterator<TType>::RandomAccessIterator(const RandomAccessIterator& other)
-    : m_Iterator(other.m_Iterator)
+        : m_Iterator(other.m_Iterator)
 {}
 
 template <typename TType>
@@ -97,7 +94,7 @@ RandomAccessIterator<TType>& RandomAccessIterator<TType>::operator=(const Random
 template <typename TType>
 bool RandomAccessIterator<TType>::operator==(const RandomAccessIterator& other) const
 {
-    return *m_Iterator == *other.m_Iterator;
+    return m_Iterator == other.m_Iterator;
 }
 
 template <typename TType>

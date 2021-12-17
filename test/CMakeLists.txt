@@ -17,4 +17,4 @@ message(STATUS "${GTEST_BOTH_LIBRARIES}")
 add_executable(${PROJECT_NAME} ${SOURCE})
 
 target_include_directories(${PROJECT_NAME} PRIVATE ${CMAKE_HOME_DIRECTORY}/c98 ${GTEST_INCLUDE_DIRS})
-target_link_libraries(${PROJECT_NAME} ${GTEST_BOTH_LIBRARIES})
+target_link_libraries(${PROJECT_NAME} ${GTEST_BOTH_LIBRARIES} pthread)

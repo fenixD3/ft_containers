@@ -12,13 +12,15 @@ public:
     typedef std::size_t size_type;
     typedef typename iterator_traits<TType>::difference_type difference_type;
     typedef typename iterator_traits<TType>::pointer pointer;
+    typedef typename iterator_traits<TType>::value_type value_type;
+    typedef typename iterator_traits<TType>::reference reference;
 
 private:
     pointer m_Iterator;
 
 public:
     RandomAccessIterator();
-    RandomAccessIterator(const pointer ptr);
+    RandomAccessIterator(pointer ptr);
 
     RandomAccessIterator(const RandomAccessIterator& other);
     RandomAccessIterator& operator=(const RandomAccessIterator& other);
@@ -31,10 +33,10 @@ public:
     bool operator>(const RandomAccessIterator& other) const;
     bool operator>=(const RandomAccessIterator& other) const;
 
-    TType operator*();
-    TType *operator->();
+    value_type operator*();
+    pointer operator->();
 
-    RandomAccessIterator& operator=(const TType& value);
+    RandomAccessIterator& operator=(reference value);
 
     // prefix version
     RandomAccessIterator& operator++();
@@ -74,7 +76,7 @@ RandomAccessIterator<TType>::RandomAccessIterator()
 {}
 
 template <typename TType>
-RandomAccessIterator<TType>::RandomAccessIterator(const pointer ptr)
+RandomAccessIterator<TType>::RandomAccessIterator(pointer ptr)
     : m_Iterator(ptr)
 {}
 
@@ -131,19 +133,19 @@ bool RandomAccessIterator<TType>::operator>=(const RandomAccessIterator& other) 
 }
 
 template <typename TType>
-TType RandomAccessIterator<TType>::operator*()
+typename RandomAccessIterator<TType>::value_type RandomAccessIterator<TType>::operator*()
 {
     return *m_Iterator;
 }
 
 template <typename TType>
-TType *RandomAccessIterator<TType>::operator->()
+typename RandomAccessIterator<TType>::pointer RandomAccessIterator<TType>::operator->()
 {
     return m_Iterator;
 }
 
 template <typename TType>
-RandomAccessIterator<TType>& RandomAccessIterator<TType>::operator=(const TType& value)
+RandomAccessIterator<TType>& RandomAccessIterator<TType>::operator=(reference value)
 {
     *m_Iterator = value;
     return *this;

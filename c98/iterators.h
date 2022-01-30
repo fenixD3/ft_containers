@@ -43,18 +43,16 @@ public:
     RandomAccessIterator& operator-=(const difference_type offset);
 
     template <typename TUType>
-    friend difference_type operator-(const RandomAccessIterator<TUType>& lhs, const RandomAccessIterator<TUType>& rhs);
-
-    friend RandomAccessIterator operator+(const RandomAccessIterator& lhs, const difference_type rhs)
-    {
-        return lhs.m_Iterator + rhs;
-    }
+    friend typename RandomAccessIterator<TUType>::difference_type operator-(const RandomAccessIterator<TUType>& lhs, const RandomAccessIterator<TUType>& rhs);
 
     template <typename TUType>
-    friend RandomAccessIterator<TUType> operator-(const RandomAccessIterator<TUType>& lhs, const difference_type rhs);
+    friend RandomAccessIterator<TUType> operator+(const RandomAccessIterator<TUType>& lhs, const typename RandomAccessIterator<TUType>::difference_type rhs);
 
     template <typename TUType>
-    friend RandomAccessIterator<TUType> operator+(const difference_type lhs, const RandomAccessIterator<TUType>& rhs);
+    friend RandomAccessIterator<TUType> operator-(const RandomAccessIterator<TUType>& lhs, const typename RandomAccessIterator<TUType>::difference_type rhs);
+
+    template <typename TUType>
+    friend RandomAccessIterator<TUType> operator+(const typename RandomAccessIterator<TUType>::difference_type lhs, const RandomAccessIterator<TUType>& rhs);
 
     TType operator[](const size_type offset);
 };
@@ -183,11 +181,11 @@ typename RandomAccessIterator<TUType>::difference_type operator-(const RandomAcc
     return lhs.m_Iterator - rhs.m_Iterator;
 }
 
-//template <typename TType>
-//RandomAccessIterator<TType> operator+(const RandomAccessIterator<TType>& lhs, const typename RandomAccessIterator<TType>::difference_type rhs)
-//{
-//    return lhs.m_Iterator + rhs;
-//}
+template <typename TType>
+RandomAccessIterator<TType> operator+(const RandomAccessIterator<TType>& lhs, const typename RandomAccessIterator<TType>::difference_type rhs)
+{
+    return lhs.m_Iterator + rhs;
+}
 
 template <typename TUType>
 RandomAccessIterator<TUType> operator-(const RandomAccessIterator<TUType>& lhs, const typename RandomAccessIterator<TUType>::difference_type rhs)

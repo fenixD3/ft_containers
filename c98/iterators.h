@@ -33,10 +33,8 @@ public:
     bool operator>(const RandomAccessIterator& other) const;
     bool operator>=(const RandomAccessIterator& other) const;
 
-    value_type operator*();
+    reference operator*();
     pointer operator->();
-
-    RandomAccessIterator& operator=(reference value);
 
     // prefix version
     RandomAccessIterator& operator++();
@@ -50,22 +48,16 @@ public:
     RandomAccessIterator& operator-=(const difference_type offset);
 
     template <typename TUType>
-    friend difference_type operator+(const RandomAccessIterator<TUType>& lhs, const RandomAccessIterator<TUType>& rhs);
+    friend typename RandomAccessIterator<TUType>::difference_type operator-(const RandomAccessIterator<TUType>& lhs, const RandomAccessIterator<TUType>& rhs);
 
     template <typename TUType>
-    friend difference_type operator-(const RandomAccessIterator<TUType>& lhs, const RandomAccessIterator<TUType>& rhs);
+    friend RandomAccessIterator<TUType> operator+(const RandomAccessIterator<TUType>& lhs, const typename RandomAccessIterator<TUType>::difference_type rhs);
 
     template <typename TUType>
-    friend RandomAccessIterator<TUType> operator+(const RandomAccessIterator<TUType>& lhs, const difference_type rhs);
+    friend RandomAccessIterator<TUType> operator-(const RandomAccessIterator<TUType>& lhs, const typename RandomAccessIterator<TUType>::difference_type rhs);
 
     template <typename TUType>
-    friend RandomAccessIterator<TUType> operator-(const RandomAccessIterator<TUType>& lhs, const difference_type rhs);
-
-    template <typename TUType>
-    friend RandomAccessIterator<TUType> operator+(const difference_type lhs, const RandomAccessIterator<TUType>& rhs);
-
-    template <typename TUType>
-    friend RandomAccessIterator<TUType> operator-(const difference_type lhs, const RandomAccessIterator<TUType>& rhs);
+    friend RandomAccessIterator<TUType> operator+(const typename RandomAccessIterator<TUType>::difference_type lhs, const RandomAccessIterator<TUType>& rhs);
 
     TType operator[](const size_type offset);
 };
@@ -133,7 +125,7 @@ bool RandomAccessIterator<TType>::operator>=(const RandomAccessIterator& other) 
 }
 
 template <typename TType>
-typename RandomAccessIterator<TType>::value_type RandomAccessIterator<TType>::operator*()
+typename RandomAccessIterator<TType>::reference RandomAccessIterator<TType>::operator*()
 {
     return *m_Iterator;
 }
@@ -142,13 +134,6 @@ template <typename TType>
 typename RandomAccessIterator<TType>::pointer RandomAccessIterator<TType>::operator->()
 {
     return m_Iterator;
-}
-
-template <typename TType>
-RandomAccessIterator<TType>& RandomAccessIterator<TType>::operator=(reference value)
-{
-    *m_Iterator = value;
-    return *this;
 }
 
 template <typename TType>
@@ -196,12 +181,6 @@ RandomAccessIterator<TType>& RandomAccessIterator<TType>::operator-=(const typen
 }
 
 template <typename TUType>
-typename RandomAccessIterator<TUType>::difference_type operator+(const RandomAccessIterator<TUType>& lhs, const RandomAccessIterator<TUType>& rhs)
-{
-    return lhs.m_Iterator + rhs.m_Iterator;
-}
-
-template <typename TUType>
 typename RandomAccessIterator<TUType>::difference_type operator-(const RandomAccessIterator<TUType>& lhs, const RandomAccessIterator<TUType>& rhs)
 {
     return lhs.m_Iterator - rhs.m_Iterator;
@@ -223,12 +202,6 @@ template <typename TUType>
 RandomAccessIterator<TUType> operator+(const typename RandomAccessIterator<TUType>::difference_type lhs, const RandomAccessIterator<TUType>& rhs)
 {
     return rhs + lhs;
-}
-
-template <typename TUType>
-RandomAccessIterator<TUType> operator-(const typename RandomAccessIterator<TUType>::difference_type lhs, const RandomAccessIterator<TUType>& rhs)
-{
-    return rhs - lhs;
 }
 
 template <typename TType>

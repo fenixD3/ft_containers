@@ -28,10 +28,8 @@ public:
     bool operator>(const RandomAccessIterator& other) const;
     bool operator>=(const RandomAccessIterator& other) const;
 
-    TType operator*();
+    TType &operator*();
     TType *operator->();
-
-    RandomAccessIterator& operator=(const TType& value);
 
     // prefix version
     RandomAccessIterator& operator++();
@@ -45,22 +43,18 @@ public:
     RandomAccessIterator& operator-=(const difference_type offset);
 
     template <typename TUType>
-    friend difference_type operator+(const RandomAccessIterator<TUType>& lhs, const RandomAccessIterator<TUType>& rhs);
-
-    template <typename TUType>
     friend difference_type operator-(const RandomAccessIterator<TUType>& lhs, const RandomAccessIterator<TUType>& rhs);
 
-    template <typename TUType>
-    friend RandomAccessIterator<TUType> operator+(const RandomAccessIterator<TUType>& lhs, const difference_type rhs);
+    friend RandomAccessIterator operator+(const RandomAccessIterator& lhs, const difference_type rhs)
+    {
+        return lhs.m_Iterator + rhs;
+    }
 
     template <typename TUType>
     friend RandomAccessIterator<TUType> operator-(const RandomAccessIterator<TUType>& lhs, const difference_type rhs);
 
     template <typename TUType>
     friend RandomAccessIterator<TUType> operator+(const difference_type lhs, const RandomAccessIterator<TUType>& rhs);
-
-    template <typename TUType>
-    friend RandomAccessIterator<TUType> operator-(const difference_type lhs, const RandomAccessIterator<TUType>& rhs);
 
     TType operator[](const size_type offset);
 };
@@ -77,7 +71,7 @@ RandomAccessIterator<TType>::RandomAccessIterator(TType *ptr)
 
 template <typename TType>
 RandomAccessIterator<TType>::RandomAccessIterator(const RandomAccessIterator& other)
-        : m_Iterator(other.m_Iterator)
+    : m_Iterator(other.m_Iterator)
 {}
 
 template <typename TType>
@@ -128,7 +122,7 @@ bool RandomAccessIterator<TType>::operator>=(const RandomAccessIterator& other) 
 }
 
 template <typename TType>
-TType RandomAccessIterator<TType>::operator*()
+TType &RandomAccessIterator<TType>::operator*()
 {
     return *m_Iterator;
 }
@@ -137,13 +131,6 @@ template <typename TType>
 TType *RandomAccessIterator<TType>::operator->()
 {
     return m_Iterator;
-}
-
-template <typename TType>
-RandomAccessIterator<TType>& RandomAccessIterator<TType>::operator=(const TType& value)
-{
-    *m_Iterator = value;
-    return *this;
 }
 
 template <typename TType>
@@ -191,22 +178,16 @@ RandomAccessIterator<TType>& RandomAccessIterator<TType>::operator-=(const typen
 }
 
 template <typename TUType>
-typename RandomAccessIterator<TUType>::difference_type operator+(const RandomAccessIterator<TUType>& lhs, const RandomAccessIterator<TUType>& rhs)
-{
-    return lhs.m_Iterator + rhs.m_Iterator;
-}
-
-template <typename TUType>
 typename RandomAccessIterator<TUType>::difference_type operator-(const RandomAccessIterator<TUType>& lhs, const RandomAccessIterator<TUType>& rhs)
 {
     return lhs.m_Iterator - rhs.m_Iterator;
 }
 
-template <typename TUType>
-RandomAccessIterator<TUType> operator+(const RandomAccessIterator<TUType>& lhs, const typename RandomAccessIterator<TUType>::difference_type rhs)
-{
-    return lhs.m_Iterator + rhs;
-}
+//template <typename TType>
+//RandomAccessIterator<TType> operator+(const RandomAccessIterator<TType>& lhs, const typename RandomAccessIterator<TType>::difference_type rhs)
+//{
+//    return lhs.m_Iterator + rhs;
+//}
 
 template <typename TUType>
 RandomAccessIterator<TUType> operator-(const RandomAccessIterator<TUType>& lhs, const typename RandomAccessIterator<TUType>::difference_type rhs)
@@ -218,12 +199,6 @@ template <typename TUType>
 RandomAccessIterator<TUType> operator+(const typename RandomAccessIterator<TUType>::difference_type lhs, const RandomAccessIterator<TUType>& rhs)
 {
     return rhs + lhs;
-}
-
-template <typename TUType>
-RandomAccessIterator<TUType> operator-(const typename RandomAccessIterator<TUType>::difference_type lhs, const RandomAccessIterator<TUType>& rhs)
-{
-    return rhs - lhs;
 }
 
 template <typename TType>

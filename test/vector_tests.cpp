@@ -26,7 +26,15 @@ TEST(VectorTest, ConstEqualEmpty)
 TEST(VectorTest, Equal)
 {
     std::vector<int> std_vec = { 1, 2, 3};
+    std::vector<int>::iterator s_it1 = std_vec.begin();
+    std::vector<int>::iterator s_it2 = s_it1 + 1;
+    std::vector<int>::iterator s_it3 = 1 + s_it1;
+
     ft::vector<int> ft_vec(std_vec.begin(), std_vec.end());
+    ft::vector<int>::iterator it1 = ft_vec.begin();
+    ft::vector<int>::iterator it2 = it1 + 1;
+    auto test_it = it2 - it1;
+
     ASSERT_EQ(std_vec.size(), ft_vec.size());
     ASSERT_TRUE(ft::equal(ft_vec.begin(), ft_vec.end(), std_vec.begin()));
 }

@@ -5,6 +5,7 @@
 
 #include "iterators.h"
 #include "algorithm.h"
+#include "type_traits.h"
 
 namespace ft
 {

@@ -3,7 +3,7 @@
 namespace ft
 {
 
-template <typename TType>
+template <typename TType, typename TContainer>
 class RandomAccessIterator
 {
 public:
@@ -42,38 +42,38 @@ public:
     RandomAccessIterator& operator+=(const difference_type offset);
     RandomAccessIterator& operator-=(const difference_type offset);
 
-    template <typename TUType>
-    friend typename RandomAccessIterator<TUType>::difference_type operator-(const RandomAccessIterator<TUType>& lhs, const RandomAccessIterator<TUType>& rhs);
+    template <typename TUType, typename TUContainer>
+    friend typename RandomAccessIterator<TUType, TUContainer>::difference_type operator-(const RandomAccessIterator<TUType, TUContainer>& lhs, const RandomAccessIterator<TUType, TUContainer>& rhs);
 
-    template <typename TUType>
-    friend RandomAccessIterator<TUType> operator+(const RandomAccessIterator<TUType>& lhs, const typename RandomAccessIterator<TUType>::difference_type rhs);
+    template <typename TUType, typename TUContainer>
+    friend RandomAccessIterator<TUType, TUContainer> operator+(const RandomAccessIterator<TUType, TUContainer>& lhs, const typename RandomAccessIterator<TUType, TUContainer>::difference_type rhs);
 
-    template <typename TUType>
-    friend RandomAccessIterator<TUType> operator-(const RandomAccessIterator<TUType>& lhs, const typename RandomAccessIterator<TUType>::difference_type rhs);
+    template <typename TUType, typename TUContainer>
+    friend RandomAccessIterator<TUType, TUContainer> operator-(const RandomAccessIterator<TUType, TUContainer>& lhs, const typename RandomAccessIterator<TUType, TUContainer>::difference_type rhs);
 
-    template <typename TUType>
-    friend RandomAccessIterator<TUType> operator+(const typename RandomAccessIterator<TUType>::difference_type lhs, const RandomAccessIterator<TUType>& rhs);
+    template <typename TUType, typename TUContainer>
+    friend RandomAccessIterator<TUType, TUContainer> operator+(const typename RandomAccessIterator<TUType, TUContainer>::difference_type lhs, const RandomAccessIterator<TUType, TUContainer>& rhs);
 
     TType operator[](const size_type offset);
 };
 
-template <typename TType>
-RandomAccessIterator<TType>::RandomAccessIterator()
+template <typename TType, typename TContainer>
+RandomAccessIterator<TType, TContainer>::RandomAccessIterator()
     : m_Iterator(NULL)
 {}
 
-template <typename TType>
-RandomAccessIterator<TType>::RandomAccessIterator(TType *ptr)
+template <typename TType, typename TContainer>
+RandomAccessIterator<TType, TContainer>::RandomAccessIterator(TType *ptr)
     : m_Iterator(ptr)
 {}
 
-template <typename TType>
-RandomAccessIterator<TType>::RandomAccessIterator(const RandomAccessIterator& other)
+template <typename TType, typename TContainer>
+RandomAccessIterator<TType, TContainer>::RandomAccessIterator(const RandomAccessIterator& other)
     : m_Iterator(other.m_Iterator)
 {}
 
-template <typename TType>
-RandomAccessIterator<TType>& RandomAccessIterator<TType>::operator=(const RandomAccessIterator& other)
+template <typename TType, typename TContainer>
+RandomAccessIterator<TType, TContainer>& RandomAccessIterator<TType, TContainer>::operator=(const RandomAccessIterator& other)
 {
     if (this == &other)
     {
@@ -83,124 +83,124 @@ RandomAccessIterator<TType>& RandomAccessIterator<TType>::operator=(const Random
     return *this;
 }
 
-template <typename TType>
-bool RandomAccessIterator<TType>::operator==(const RandomAccessIterator& other) const
+template <typename TType, typename TContainer>
+bool RandomAccessIterator<TType, TContainer>::operator==(const RandomAccessIterator& other) const
 {
     return m_Iterator == other.m_Iterator;
 }
 
-template <typename TType>
-bool RandomAccessIterator<TType>::operator!=(const RandomAccessIterator& other) const
+template <typename TType, typename TContainer>
+bool RandomAccessIterator<TType, TContainer>::operator!=(const RandomAccessIterator& other) const
 {
     return !(*this == other);
 }
 
-template <typename TType>
-bool RandomAccessIterator<TType>::operator<(const RandomAccessIterator& other) const
+template <typename TType, typename TContainer>
+bool RandomAccessIterator<TType, TContainer>::operator<(const RandomAccessIterator& other) const
 {
     return m_Iterator < other.m_Iterator;
 }
 
-template <typename TType>
-bool RandomAccessIterator<TType>::operator<=(const RandomAccessIterator& other) const
+template <typename TType, typename TContainer>
+bool RandomAccessIterator<TType, TContainer>::operator<=(const RandomAccessIterator& other) const
 {
     return m_Iterator <= other.m_Iterator;
 }
 
-template <typename TType>
-bool RandomAccessIterator<TType>::operator>(const RandomAccessIterator& other) const
+template <typename TType, typename TContainer>
+bool RandomAccessIterator<TType, TContainer>::operator>(const RandomAccessIterator& other) const
 {
     return m_Iterator > other.m_Iterator;
 }
 
-template <typename TType>
-bool RandomAccessIterator<TType>::operator>=(const RandomAccessIterator& other) const
+template <typename TType, typename TContainer>
+bool RandomAccessIterator<TType, TContainer>::operator>=(const RandomAccessIterator& other) const
 {
     return m_Iterator >= other.m_Iterator;
 }
 
-template <typename TType>
-TType &RandomAccessIterator<TType>::operator*()
+template <typename TType, typename TContainer>
+TType &RandomAccessIterator<TType, TContainer>::operator*()
 {
     return *m_Iterator;
 }
 
-template <typename TType>
-TType *RandomAccessIterator<TType>::operator->()
+template <typename TType, typename TContainer>
+TType *RandomAccessIterator<TType, TContainer>::operator->()
 {
     return m_Iterator;
 }
 
-template <typename TType>
-RandomAccessIterator<TType>& RandomAccessIterator<TType>::operator++()
+template <typename TType, typename TContainer>
+RandomAccessIterator<TType, TContainer>& RandomAccessIterator<TType, TContainer>::operator++()
 {
     ++m_Iterator;
     return *this;
 }
 
-template <typename TType>
-RandomAccessIterator<TType>& RandomAccessIterator<TType>::operator--()
+template <typename TType, typename TContainer>
+RandomAccessIterator<TType, TContainer>& RandomAccessIterator<TType, TContainer>::operator--()
 {
     --m_Iterator;
     return *this;
 }
 
-template <typename TType>
-RandomAccessIterator<TType> RandomAccessIterator<TType>::operator++(int)
+template <typename TType, typename TContainer>
+RandomAccessIterator<TType, TContainer> RandomAccessIterator<TType, TContainer>::operator++(int)
 {
     RandomAccessIterator temp(*this);
     ++(*this);
     return temp;
 }
 
-template <typename TType>
-RandomAccessIterator<TType> RandomAccessIterator<TType>::operator--(int)
+template <typename TType, typename TContainer>
+RandomAccessIterator<TType, TContainer> RandomAccessIterator<TType, TContainer>::operator--(int)
 {
     RandomAccessIterator temp(*this);
     --(*this);
     return temp;
 }
 
-template <typename TType>
-RandomAccessIterator<TType>& RandomAccessIterator<TType>::operator+=(const typename RandomAccessIterator::difference_type offset)
+template <typename TType, typename TContainer>
+RandomAccessIterator<TType, TContainer>& RandomAccessIterator<TType, TContainer>::operator+=(const typename RandomAccessIterator::difference_type offset)
 {
     m_Iterator += offset;
     return *this;
 }
 
-template <typename TType>
-RandomAccessIterator<TType>& RandomAccessIterator<TType>::operator-=(const typename RandomAccessIterator::difference_type offset)
+template <typename TType, typename TContainer>
+RandomAccessIterator<TType, TContainer>& RandomAccessIterator<TType, TContainer>::operator-=(const typename RandomAccessIterator::difference_type offset)
 {
     m_Iterator -= offset;
     return *this;
 }
 
-template <typename TUType>
-typename RandomAccessIterator<TUType>::difference_type operator-(const RandomAccessIterator<TUType>& lhs, const RandomAccessIterator<TUType>& rhs)
+template <typename TUType, typename TUContainer>
+typename RandomAccessIterator<TUType, TUContainer>::difference_type operator-(const RandomAccessIterator<TUType, TUContainer>& lhs, const RandomAccessIterator<TUType, TUContainer>& rhs)
 {
     return lhs.m_Iterator - rhs.m_Iterator;
 }
 
-template <typename TType>
-RandomAccessIterator<TType> operator+(const RandomAccessIterator<TType>& lhs, const typename RandomAccessIterator<TType>::difference_type rhs)
+template <typename TUType, typename TUContainer>
+RandomAccessIterator<TUType, TUContainer> operator+(const RandomAccessIterator<TUType, TUContainer>& lhs, const typename RandomAccessIterator<TUType, TUContainer>::difference_type rhs)
 {
     return lhs.m_Iterator + rhs;
 }
 
-template <typename TUType>
-RandomAccessIterator<TUType> operator-(const RandomAccessIterator<TUType>& lhs, const typename RandomAccessIterator<TUType>::difference_type rhs)
+template <typename TUType, typename TUContainer>
+RandomAccessIterator<TUType, TUContainer> operator-(const RandomAccessIterator<TUType, TUContainer>& lhs, const typename RandomAccessIterator<TUType, TUContainer>::difference_type rhs)
 {
     return lhs.m_Iterator - rhs;
 }
 
-template <typename TUType>
-RandomAccessIterator<TUType> operator+(const typename RandomAccessIterator<TUType>::difference_type lhs, const RandomAccessIterator<TUType>& rhs)
+template <typename TUType, typename TUContainer>
+RandomAccessIterator<TUType, TUContainer> operator+(const typename RandomAccessIterator<TUType, TUContainer>::difference_type lhs, const RandomAccessIterator<TUType, TUContainer>& rhs)
 {
     return rhs + lhs;
 }
 
-template <typename TType>
-TType RandomAccessIterator<TType>::operator[](const size_type offset)
+template <typename TType, typename TContainer>
+TType RandomAccessIterator<TType, TContainer>::operator[](const size_type offset)
 {
     return *(m_Iterator + offset);
 }

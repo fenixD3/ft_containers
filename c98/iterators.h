@@ -1,5 +1,8 @@
 #pragma once
 
+#include "type_traits.h"
+#include "value_traits.h"
+
 namespace ft
 {
 
@@ -16,6 +19,11 @@ private:
 public:
     RandomAccessIterator();
     RandomAccessIterator(TType *ptr);
+
+    template <typename TUType>
+    RandomAccessIterator(const RandomAccessIterator<
+        TUType,
+        typename enable_if<is_same<typename TContainer::value_type, TUType>::value, TContainer>::type>& other);
 
     RandomAccessIterator(const RandomAccessIterator& other);
     RandomAccessIterator& operator=(const RandomAccessIterator& other);
@@ -68,8 +76,16 @@ RandomAccessIterator<TType, TContainer>::RandomAccessIterator(TType *ptr)
 {}
 
 template <typename TType, typename TContainer>
-RandomAccessIterator<TType, TContainer>::RandomAccessIterator(const RandomAccessIterator& other)
+template <typename TUType>
+RandomAccessIterator<TType, TContainer>::RandomAccessIterator(const RandomAccessIterator<
+        TUType,
+        typename enable_if<is_same<typename TContainer::value_type, TUType>::value, TContainer>::type>& other)
     : m_Iterator(other.m_Iterator)
+{}
+
+template <typename TType, typename TContainer>
+RandomAccessIterator<TType, TContainer>::RandomAccessIterator(const RandomAccessIterator& other)
+        : m_Iterator(other.m_Iterator)
 {}
 
 template <typename TType, typename TContainer>

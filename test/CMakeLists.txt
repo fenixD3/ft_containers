@@ -4,6 +4,8 @@ project(test)
 
 set(CMAKE_CXX_STANDARD 17)
 
+enable_testing()
+
 file(GLOB SOURCE ${PROJECT_SOURCE_DIR}/*.cpp)
 message(STATUS "test = ${SOURCE}")
 

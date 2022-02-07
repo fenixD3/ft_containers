@@ -5,7 +5,6 @@
 
 #include "iterators.h"
 #include "algorithm.h"
-#include "type_traits.h"
 
 namespace ft
 {
@@ -22,8 +21,8 @@ public:
     typedef const typename allocator_type::const_reference const_reference;
     typedef typename allocator_type::pointer pointer;
     typedef typename allocator_type::const_pointer const_pointer;
-    typedef RandomAccessIterator<pointer> iterator;
-    typedef const RandomAccessIterator<pointer> const_iterator;
+    typedef RandomAccessIterator<pointer, vector> iterator;
+    typedef const RandomAccessIterator<pointer, vector> const_iterator;
 //    typedef ... reverse_iterator;
 //    typedef ... const_reverse_iterator;
 

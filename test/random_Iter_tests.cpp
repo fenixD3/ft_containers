@@ -3,32 +3,48 @@
 #include "vector.hpp"
 
 #include <string>
+#include <vector>
+#include <iostream>
 
 class RandomAccessIteratorTests : public testing::Test
 {
-protected:
-    ft::vector<int> v1;
-    ft::vector<std::string> v2;
+//private:
+//    std::vector<std::string> v_str = {"Hello", "World", "Piter"};
 
 protected:
+    ft::vector<int> v_int;
+    /*const*/ ft::vector<std::string> c_v_str;
+
+protected:
+//    RandomAccessIteratorTests()
+//        : c_v_str(v_str.begin(), v_str.end())
+//    {}
+
     void SetUp() override
     {
-        v1.push_back(1);
-        v1.push_back(2);
-        v1.push_back(3);
+        v_int.push_back(1);
+        v_int.push_back(2);
+        v_int.push_back(3);
 
-        v2.insert(v2.end(), "Hello");
-        v2.insert(v2.end(), "World");
-        v2.insert(v2.end(), "Piter");
+        c_v_str.insert(c_v_str.end(), "Hello");
+        c_v_str.insert(c_v_str.end(), "World");
+        c_v_str.insert(c_v_str.end(), "Piter");
     }
 };
 
+TEST_F(RandomAccessIteratorTests, AccessOperator)
+{
+    ASSERT_EQ(v_int[0], 1);
+    ASSERT_EQ(v_int[1], 2);
+    ASSERT_EQ(v_int[2], 3);
+}
+
 TEST_F(RandomAccessIteratorTests, Iteration)
 {
-    auto start_it = v1.begin();
+    auto start_it = v_int.begin();
 
-    for (auto it = v1.begin(); it != v1.end(); ++it)
+    for (auto it = v_int.begin(); it != v_int.end(); ++it)
     {
-        ASSERT_EQ(it, it - (it - start_it));
+        ASSERT_EQ(*it, *(start_it + (it - start_it)));
     }
 }

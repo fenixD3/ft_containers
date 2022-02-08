@@ -81,18 +81,30 @@ public:
     void assign(size_type new_size, const value_type& val); /// change size, substituting all old elements to val
 
     template <typename InputIterator>
-    void assign (InputIterator begin, InputIterator end);
-    void push_back (const value_type& val);
+    void assign(InputIterator begin, InputIterator end);
+    void push_back(const value_type& val);
     void pop_back();
     iterator insert(iterator position, const value_type& val);
     void insert(iterator position, size_type n, const value_type& val);
+
     template <class InputIterator>
     void insert(iterator position, InputIterator first, InputIterator last);
+
     iterator erase(iterator position);
     iterator erase(iterator first, iterator last);
     void swap(vector& x);
     void clear();
 
+private:
+    void construct_elements(size_type begin_pos,
+                            size_type end_pos,
+                            pointer destination,
+                            const value_type& source);
+    void construct_elements(size_type begin_pos,
+                            size_type end_pos,
+                            pointer destination,
+                            pointer source);
+    void destroy_elements(size_type begin_pos, size_type end_pos);
 };
 
 template <typename TType, typename TAllocator>
@@ -110,10 +122,7 @@ vector<TType, TAllocator>::vector(size_type mem_size, const value_type& value, c
     , m_Capacity(mem_size)
 {
     m_Data = m_Allocator.allocate(m_Capacity);
-    for (size_type i = 0; i < m_Size; ++i)
-    {
-        m_Allocator.construct(m_Data + i, value);
-    }
+    construct_elements(0, m_Size, m_Data, value);
 }
 
 template <typename TType, typename TAllocator>
@@ -199,17 +208,11 @@ void vector<TType, TAllocator>::resize(vector::size_type new_size, value_type va
     if (new_size > capacity())
     {
         reserve(capacity() * 2 * (new_size / capacity()));
-        for (size_type i = m_Size; i < new_size; ++i)
-        {
-            m_Allocator.construct(m_Data + i, val);
-        }
+        construct_elements(m_Size, new_size, m_Data, val);
     }
     else
     {
-        for (size_type i = new_size; i < m_Size; ++ i)
-        {
-            m_Allocator.destroy(m_Data + i);
-        }
+        destroy_elements(new_size, m_Size);
     }
     m_Size = new_size;
 }
@@ -232,13 +235,13 @@ void vector<TType, TAllocator>::reserve(size_type new_capacity)
     if (new_capacity > capacity())
     {
         pointer new_data = m_Allocator.allocate(new_capacity);
-        for (size_type i = 0; i < m_Size; ++i)
-        {
-            m_Allocator.construct(new_data + i, m_Data[i]);
-        }
+        construct_elements(0, m_Size, new_data, m_Data);
+
+        size_type saved_size = m_Size;
         clear();
         m_Allocator.deallocate(m_Data, m_Capacity);
         m_Data = new_data;
+        m_Size = saved_size;
     }
     m_Capacity = new_capacity;
 }
@@ -312,10 +315,7 @@ void vector<TType, TAllocator>::assign(vector::size_type new_size, const value_t
         m_Capacity *= 2 * (new_size / capacity());
         m_Data = m_Allocator.allocate(capacity());
     }
-    for (size_type i = 0; i < new_size; ++i)
-    {
-        m_Allocator.construct(m_Data + i, val);
-    }
+    construct_elements(0, new_size, m_Data, val);
     m_Size = new_size;
 }
 
@@ -356,7 +356,7 @@ void vector<TType, TAllocator>::push_back(const value_type &val)
             reserve(capacity() * 2);
         }
     }
-    m_Allocator.construct(m_Data + m_Size, val);
+    construct_elements(m_Size, m_Size + 1, m_Data, val);
     ++m_Size;
 }
 
@@ -364,15 +364,17 @@ template<typename TType, typename TAllocator>
 void vector<TType, TAllocator>::pop_back()
 {
     --m_Size;
-    m_Allocator.destroy(m_Data + m_Size);
+    destroy_elements(m_Size, m_Size + 1);
 }
 
 template<typename TType, typename TAllocator>
 typename vector<TType, TAllocator>::iterator vector<TType, TAllocator>::insert(iterator position, const value_type& val)
 {
+    typename vector::iterator inserted;
     if (position == end())
     {
         push_back(val);
+        inserted = end() - 1;
     }
     else
     {
@@ -381,15 +383,11 @@ typename vector<TType, TAllocator>::iterator vector<TType, TAllocator>::insert(i
         {
             ++m_Size;
             pointer new_data = m_Allocator.allocate(capacity() * 2);
-            for (size_type i = 0; i < inserting_idx; ++i)
-            {
-                m_Allocator.construct(new_data + i, m_Data[i]);
-            }
-            m_Allocator.construct(new_data + inserting_idx, val);
-            for (size_type i = inserting_idx + 1; i < m_Size; ++i)
-            {
-                m_Allocator.construct(new_data + i, m_Data[i]);
-            }
+
+            construct_elements(0, inserting_idx, new_data, m_Data);
+            construct_elements(inserting_idx, inserting_idx + 1, new_data, val);
+            construct_elements(inserting_idx + 1, m_Size, new_data, m_Data);
+
             clear();
             m_Allocator.deallocate(m_Data, m_Capacity);
             m_Data = new_data;
@@ -401,10 +399,12 @@ typename vector<TType, TAllocator>::iterator vector<TType, TAllocator>::insert(i
             {
                 m_Data[i + 1] = m_Data[i];
             }
-            m_Allocator.construct(m_Data + inserting_idx, val);
+            construct_elements(inserting_idx, inserting_idx + 1, m_Data, val);
             ++m_Size;
         }
+        inserted = &m_Data[inserting_idx];
     }
+    return inserted;
 }
 
 template<typename TType, typename TAllocator>
@@ -424,18 +424,14 @@ void vector<TType, TAllocator>::insert(iterator position, size_type n, const val
         {
             m_Size += n;
             pointer new_data = m_Allocator.allocate(capacity() * 2 * (size() / capacity()));
-            for (size_type i = 0; i < inserting_idx; ++i)
-            {
-                m_Allocator.construct(new_data + i, m_Data[i]);
-            }
+
+            construct_elements(0, inserting_idx, new_data, m_Data);
             while (--n)
             {
                 m_Allocator.construct(new_data + inserting_idx + n, val);
             }
-            for (size_type i = inserting_idx + 1; i < m_Size; ++i)
-            {
-                m_Allocator.construct(new_data + i, m_Data[i]);
-            }
+            construct_elements(inserting_idx + 1, m_Size, new_data, m_Data);
+
             clear();
             m_Allocator.deallocate(m_Data, m_Capacity);
             m_Data = new_data;
@@ -475,18 +471,14 @@ void vector<TType, TAllocator>::insert(iterator position, InputIterator first, I
         {
             m_Size += n;
             pointer new_data = m_Allocator.allocate(capacity() * 2 * (size() / capacity()));
-            for (size_type i = 0; i < inserting_idx; ++i)
-            {
-                m_Allocator.construct(new_data + i, m_Data[i]);
-            }
+
+            construct_elements(0, inserting_idx, new_data, m_Data);
             while (--n)
             {
                 m_Allocator.construct(new_data + inserting_idx + n, *(first + n));
             }
-            for (size_type i = inserting_idx + 1; i < m_Size; ++i)
-            {
-                m_Allocator.construct(new_data + i, m_Data[i]);
-            }
+            construct_elements(inserting_idx + 1, m_Size, new_data, m_Data);
+
             clear();
             m_Allocator.deallocate(m_Data, m_Capacity);
             m_Data = new_data;
@@ -517,7 +509,7 @@ typename vector<TType, TAllocator>::iterator vector<TType, TAllocator>::erase(it
     else
     {
         size_type inserting_idx = position - begin();
-        m_Allocator.destroy(m_Data + inserting_idx);
+        destroy_elements(inserting_idx, inserting_idx + 1);
         for (size_type i = inserting_idx + 1; i < m_Size; ++i)
         {
             m_Allocator.construct(m_Data + (i - 1), m_Data[i]);
@@ -533,7 +525,7 @@ typename vector<TType, TAllocator>::iterator vector<TType, TAllocator>::erase(it
     size_type end_idx = last - begin();
     for (size_type i = start_idx; i < end_idx; ++i)
     {
-        m_Allocator.destroy(m_Data + i);
+        destroy_elements(i, i + 1);
         for (size_type j = end_idx; j < m_Size; ++j)
         {
             m_Allocator.construct(m_Data + i, m_Data[j]);
@@ -564,11 +556,41 @@ void vector<TType, TAllocator>::swap(vector& x)
 template <typename TType, typename TAllocator>
 void vector<TType, TAllocator>::clear()
 {
-    for (size_type i = 0; i < m_Size; ++i)
+    destroy_elements(0, m_Size);
+    m_Size = 0;
+}
+
+template <typename TType, typename TAllocator>
+void vector<TType, TAllocator>::construct_elements(size_type begin_pos,
+                                                   size_type end_pos,
+                                                   pointer destination,
+                                                   const value_type& source)
+{
+    for (size_type i = begin_pos; i < end_pos; ++i)
+    {
+        m_Allocator.construct(destination + i, source);
+    }
+}
+
+template <typename TType, typename TAllocator>
+void vector<TType, TAllocator>::construct_elements(size_type begin_pos,
+                                                   size_type end_pos,
+                                                   pointer destination,
+                                                   pointer source)
+{
+    for (size_type i = begin_pos; i < end_pos; ++i)
+    {
+        m_Allocator.construct(destination + i, source[i]);
+    }
+}
+
+template <typename TType, typename TAllocator>
+void vector<TType, TAllocator>::destroy_elements(size_type begin_pos, size_type end_pos)
+{
+    for (size_type i = begin_pos; i < end_pos; ++ i)
     {
         m_Allocator.destroy(m_Data + i);
     }
-    m_Size = 0;
 }
 
 template <class TType, class TAlloc>

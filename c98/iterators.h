@@ -55,16 +55,24 @@ public:
     RandomAccessIterator& operator-=(const difference_type offset);
 
     template <typename TUIter, typename TUContainer>
-    friend typename RandomAccessIterator<TUIter, TUContainer>::difference_type operator-(const RandomAccessIterator<TUIter, TUContainer>& lhs, const RandomAccessIterator<TUIter, TUContainer>& rhs);
+    friend typename RandomAccessIterator<TUIter, TUContainer>::difference_type operator-(
+            const RandomAccessIterator<TUIter, TUContainer>& lhs,
+            const RandomAccessIterator<TUIter, TUContainer>& rhs);
 
     template <typename TUIter, typename TUContainer>
-    friend RandomAccessIterator<TUIter, TUContainer> operator+(const RandomAccessIterator<TUIter, TUContainer>& lhs, const typename RandomAccessIterator<TUIter, TUContainer>::difference_type rhs);
+    friend RandomAccessIterator<TUIter, TUContainer> operator+(
+            const RandomAccessIterator<TUIter, TUContainer>& lhs,
+            const typename RandomAccessIterator<TUIter, TUContainer>::difference_type rhs);
 
     template <typename TUIter, typename TUContainer>
-    friend RandomAccessIterator<TUIter, TUContainer> operator-(const RandomAccessIterator<TUIter, TUContainer>& lhs, const typename RandomAccessIterator<TUIter, TUContainer>::difference_type rhs);
+    friend RandomAccessIterator<TUIter, TUContainer> operator-(
+            const RandomAccessIterator<TUIter, TUContainer>& lhs,
+            const typename RandomAccessIterator<TUIter, TUContainer>::difference_type rhs);
 
     template <typename TUIter, typename TUContainer>
-    friend RandomAccessIterator<TUIter, TUContainer> operator+(const typename RandomAccessIterator<TUIter, TUContainer>::difference_type lhs, const RandomAccessIterator<TUIter, TUContainer>& rhs);
+    friend RandomAccessIterator<TUIter, TUContainer> operator+(
+            const typename RandomAccessIterator<TUIter, TUContainer>::difference_type lhs,
+            const RandomAccessIterator<TUIter, TUContainer>& rhs);
 
     value_type operator[](const size_type offset);
 };
@@ -215,7 +223,7 @@ RandomAccessIterator<TUIter, TUContainer> operator+(
 
 template <typename TUIter, typename TUContainer>
 RandomAccessIterator<TUIter, TUContainer> operator-(
-        const RandomAccessIterator<TUIter, TUContainer>& lhs, 
+        const RandomAccessIterator<TUIter, TUContainer>& lhs,
         const typename RandomAccessIterator<TUIter, TUContainer>::difference_type rhs)
 {
     return lhs.m_Iterator - rhs;

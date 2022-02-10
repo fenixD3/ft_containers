@@ -22,7 +22,7 @@ public:
     typedef typename allocator_type::pointer pointer;
     typedef typename allocator_type::const_pointer const_pointer;
     typedef RandomAccessIterator<pointer, vector> iterator;
-    typedef const RandomAccessIterator<pointer, vector> const_iterator;
+    typedef RandomAccessIterator<const_pointer, vector> const_iterator;
 //    typedef ... reverse_iterator;
 //    typedef ... const_reverse_iterator;
 
@@ -129,7 +129,7 @@ template <typename TType, typename TAllocator>
 template <typename InputIterator>
 vector<TType, TAllocator>::vector(InputIterator begin, InputIterator end, const allocator_type& alloc)
     : m_Allocator(alloc)
-    , m_Size(end - begin)
+    , m_Size(0)
     , m_Capacity(end - begin)
 {
     m_Data = m_Allocator.allocate(m_Capacity);

@@ -40,8 +40,8 @@ public:
     bool operator>(const RandomAccessIterator& other) const;
     bool operator>=(const RandomAccessIterator& other) const;
 
-    reference operator*();
-    pointer operator->();
+    reference operator*() const;
+    pointer operator->() const;
 
     // prefix version
     RandomAccessIterator& operator++();
@@ -74,7 +74,7 @@ public:
             const typename RandomAccessIterator<TUIter, TUContainer>::difference_type lhs,
             const RandomAccessIterator<TUIter, TUContainer>& rhs);
 
-    value_type operator[](const size_type offset);
+    value_type operator[](const size_type offset) const;
 };
 
 template <typename TIter, typename TContainer>
@@ -148,13 +148,13 @@ bool RandomAccessIterator<TIter, TContainer>::operator>=(const RandomAccessItera
 }
 
 template <typename TIter, typename TContainer>
-typename RandomAccessIterator<TIter, TContainer>::reference RandomAccessIterator<TIter, TContainer>::operator*()
+typename RandomAccessIterator<TIter, TContainer>::reference RandomAccessIterator<TIter, TContainer>::operator*() const
 {
     return *m_Iterator;
 }
 
 template <typename TIter, typename TContainer>
-typename RandomAccessIterator<TIter, TContainer>::pointer RandomAccessIterator<TIter, TContainer>::operator->()
+typename RandomAccessIterator<TIter, TContainer>::pointer RandomAccessIterator<TIter, TContainer>::operator->() const
 {
     return m_Iterator;
 }
@@ -238,8 +238,7 @@ RandomAccessIterator<TUIter, TUContainer> operator+(
 }
 
 template <typename TIter, typename TContainer>
-typename RandomAccessIterator<TIter, TContainer>::value_type RandomAccessIterator<TIter, TContainer>::operator[](
-        const size_type offset)
+typename RandomAccessIterator<TIter, TContainer>::value_type RandomAccessIterator<TIter, TContainer>::operator[](const size_type offset) const
 {
     return *(m_Iterator + offset);
 }

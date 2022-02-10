@@ -30,7 +30,6 @@ TEST(VectorTest, Equal)
     std::vector<int>::iterator s_it2 = s_it1 + 1;
     std::vector<int>::iterator s_it3 = 1 + s_it1;
 
-    std::cout << std_vec.end() - std_vec.begin() << std::endl;
     ft::vector<int> ft_vec(std_vec.begin(), std_vec.end());
     ft::vector<int>::iterator it1 = ft_vec.begin();
     ft::vector<int>::iterator it2 = 1 + it1;

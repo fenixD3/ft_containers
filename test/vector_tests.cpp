@@ -15,14 +15,6 @@ TEST(VectorTest, EqualEmpty)
     ASSERT_TRUE(ft::equal(v1.begin(), v1.end(), v2.begin()));
 }
 
-TEST(VectorTest, ConstEqualEmpty)
-{
-    const ft::vector<int> v1;
-    const std::vector<int> v2;
-    ASSERT_EQ(v1.size(), v2.size());
-    ASSERT_TRUE(ft::equal(v1.begin(), v1.end(), v2.begin()));
-}
-
 TEST(VectorTest, Equal)
 {
     std::vector<int> std_vec = { 1, 2, 3};

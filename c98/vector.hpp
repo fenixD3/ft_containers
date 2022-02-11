@@ -3,7 +3,8 @@
 #include <limits>
 #include <memory>
 
-#include "iterators.h"
+#include "random_access_iter.h"
+#include "reverse_iter.h"
 #include "algorithm.h"
 
 namespace ft
@@ -23,8 +24,8 @@ public:
     typedef typename allocator_type::const_pointer const_pointer;
     typedef RandomAccessIterator<pointer, vector> iterator;
     typedef RandomAccessIterator<const_pointer, vector> const_iterator;
-//    typedef ... reverse_iterator;
-//    typedef ... const_reverse_iterator;
+    typedef ReverseIterator<iterator> reverse_iterator;
+    typedef ReverseIterator<const_iterator> const_reverse_iterator;
 
 //    static_assert(
 //        std::is_same<value_type, typename allocator_type::value_type>::value,
@@ -54,10 +55,16 @@ public:
     const_iterator begin() const;
     iterator end();
     const_iterator end() const;
-//    reverse_iterator rbegin();
-//    const_reverse_iterator rbegin() const;
-//    reverse_iterator rend();
-//    const_reverse_iterator rend() const;
+
+    reverse_iterator rbegin();
+    const_reverse_iterator rbegin() const;
+    reverse_iterator rend();
+    const_reverse_iterator rend() const;
+
+    const_iterator cbegin() const;
+    const_iterator cend() const;
+    const_reverse_iterator crbegin() const;
+    const_reverse_iterator crend() const;
 
     // capacity methods
     size_type size() const;
@@ -188,6 +195,54 @@ template <typename TType, typename TAllocator>
 typename vector<TType, TAllocator>::const_iterator vector<TType, TAllocator>::end() const
 {
     return const_iterator(m_Data + m_Size);
+}
+
+template <typename TType, typename TAllocator>
+typename vector<TType, TAllocator>::reverse_iterator vector<TType, TAllocator>::rbegin()
+{
+    return typename vector::reverse_iterator(end());
+}
+
+template <typename TType, typename TAllocator>
+typename vector<TType, TAllocator>::const_reverse_iterator vector<TType, TAllocator>::rbegin() const
+{
+    return typename vector::reverse_iterator(end());
+}
+
+template <typename TType, typename TAllocator>
+typename vector<TType, TAllocator>::reverse_iterator vector<TType, TAllocator>::rend()
+{
+    return typename vector::reverse_iterator(begin());
+}
+
+template <typename TType, typename TAllocator>
+typename vector<TType, TAllocator>::const_reverse_iterator vector<TType, TAllocator>::rend() const
+{
+    return typename vector::reverse_iterator(begin());
+}
+
+template <typename TType, typename TAllocator>
+typename vector<TType, TAllocator>::const_iterator vector<TType, TAllocator>::cbegin() const
+{
+    return m_Data;
+}
+
+template <typename TType, typename TAllocator>
+typename vector<TType, TAllocator>::const_iterator vector<TType, TAllocator>::cend() const
+{
+    return m_Data + m_Size;
+}
+
+template <typename TType, typename TAllocator>
+typename vector<TType, TAllocator>::const_reverse_iterator vector<TType, TAllocator>::crbegin() const
+{
+    return typename vector::reverse_iterator(cend());
+}
+
+template <typename TType, typename TAllocator>
+typename vector<TType, TAllocator>::const_reverse_iterator vector<TType, TAllocator>::crend() const
+{
+    return typename vector::reverse_iterator(cbegin());
 }
 
 template <typename TType, typename TAllocator>

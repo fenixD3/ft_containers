@@ -74,7 +74,7 @@ public:
             const typename RandomAccessIterator<TUIter, TUContainer>::difference_type lhs,
             const RandomAccessIterator<TUIter, TUContainer>& rhs);
 
-    value_type operator[](const size_type offset) const;
+    reference operator[](const size_type offset) const;
 };
 
 template <typename TIter, typename TContainer>
@@ -238,7 +238,7 @@ RandomAccessIterator<TUIter, TUContainer> operator+(
 }
 
 template <typename TIter, typename TContainer>
-typename RandomAccessIterator<TIter, TContainer>::value_type RandomAccessIterator<TIter, TContainer>::operator[](const size_type offset) const
+typename RandomAccessIterator<TIter, TContainer>::reference RandomAccessIterator<TIter, TContainer>::operator[](const size_type offset) const
 {
     return *(m_Iterator + offset);
 }

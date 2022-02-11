@@ -1,16 +1,16 @@
 #include "gtest/gtest.h"
-#include "random_access_iter.h"
+#include "reverse_iter.h"
 #include "vector.hpp"
 
 #include <string>
 #include <vector>
 #include <iostream>
 
-class RandomAccessIteratorTests : public testing::Test
+class ReverseIteratorTests : public testing::Test
 {
 protected:
     ft::vector<int> v_int;
-    ft::vector<int>::iterator start_v_int;
+    ft::vector<int>::reverse_iterator reverse_start_v_int;
 
     int first_i = 1, second_i = 2, third_i = 3;
     std::string first_s = "Hello", second_s = "World", third_s = "Piter";
@@ -24,11 +24,11 @@ protected:
         v_int.push_back(second_i);
         v_int.push_back(third_i);
 
-        start_v_int = v_int.begin();
+        reverse_start_v_int = v_int.rbegin();
     }
 };
 
-TEST_F(RandomAccessIteratorTests, ConstIter)
+TEST_F(ReverseIteratorTests, ConstIter)
 {
     auto ves_str_it = vec_str.begin();
     const ft::vector<std::string> c_v_str(vec_str.begin(), vec_str.end());
@@ -38,35 +38,39 @@ TEST_F(RandomAccessIteratorTests, ConstIter)
 //    std::cout << *c_it;
 //    *ves_str_it = "ggg";
 //    *c_it = "ggg";
+    for (auto it = vec_str.rbegin(); it != vec_str.rend(); ++it)
+    {
+        std::cout << *it << std::endl;
+    }
 }
 
-TEST_F(RandomAccessIteratorTests, ArrowOperator)
+TEST_F(ReverseIteratorTests, ArrowOperator)
 {
     ft::vector<std::string> new_str(vec_str.begin(), vec_str.end());
     auto new_it = new_str.begin();
     ASSERT_EQ(new_it->front(), vec_str.begin()->front());
 }
 
-TEST_F(RandomAccessIteratorTests, AccessOperator)
+TEST_F(ReverseIteratorTests, AccessOperator)
 {
     for (auto i = 0; i < v_int.size(); ++i)
     {
-        ASSERT_EQ(start_v_int[i], v_int[i]);
+        ASSERT_EQ(reverse_start_v_int[i], v_int[v_int.size() - i - 1]);
     }
 }
 
-TEST_F(RandomAccessIteratorTests, IterationStraight)
+TEST_F(ReverseIteratorTests, IterationStraight)
 {
-    for (auto it = v_int.begin(); it != v_int.end(); ++it)
+    for (auto it = v_int.rbegin(); it != v_int.rend(); ++it)
     {
-        ASSERT_EQ(*it, *(start_v_int + (it - start_v_int)));
+        ASSERT_EQ(*it, *(reverse_start_v_int + (it - reverse_start_v_int)));
     }
 }
 
-TEST_F(RandomAccessIteratorTests, IterationBack)
+TEST_F(ReverseIteratorTests, IterationBack)
 {
-    for (auto it = v_int.end() - 1; it >= v_int.begin(); --it)
+    for (auto it = v_int.rend() - 1; it >= v_int.rbegin(); --it)
     {
-        ASSERT_EQ(it, (start_v_int + (it - start_v_int)));
+        ASSERT_EQ(it, (reverse_start_v_int + (it - reverse_start_v_int)));
     }
 }

@@ -38,10 +38,6 @@ TEST_F(ReverseIteratorTests, ConstIter)
 //    std::cout << *c_it;
 //    *ves_str_it = "ggg";
 //    *c_it = "ggg";
-    for (auto it = vec_str.rbegin(); it != vec_str.rend(); ++it)
-    {
-        std::cout << *it << std::endl;
-    }
 }
 
 TEST_F(ReverseIteratorTests, ArrowOperator)

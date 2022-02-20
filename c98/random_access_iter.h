@@ -2,7 +2,6 @@
 
 #include "iterator_traits.h"
 #include "type_traits.h"
-#include "value_traits.h"
 
 namespace ft
 {
@@ -12,6 +11,7 @@ class RandomAccessIterator
 {
 public:
     typedef std::size_t size_type;
+    typedef typename iterator_traits<TIter>::iterator_category iterator_category;
     typedef typename iterator_traits<TIter>::difference_type difference_type;
     typedef typename iterator_traits<TIter>::pointer pointer;
     typedef typename iterator_traits<TIter>::value_type value_type;
@@ -218,7 +218,7 @@ RandomAccessIterator<TUIter, TUContainer> operator+(
         const RandomAccessIterator<TUIter, TUContainer>& lhs, 
         const typename RandomAccessIterator<TUIter, TUContainer>::difference_type rhs)
 {
-    return lhs.m_Iterator + rhs;
+    return RandomAccessIterator<TUIter, TUContainer>(lhs.m_Iterator + rhs);
 }
 
 template <typename TUIter, typename TUContainer>
@@ -226,7 +226,7 @@ RandomAccessIterator<TUIter, TUContainer> operator-(
         const RandomAccessIterator<TUIter, TUContainer>& lhs,
         const typename RandomAccessIterator<TUIter, TUContainer>::difference_type rhs)
 {
-    return lhs.m_Iterator - rhs;
+    return RandomAccessIterator<TUIter, TUContainer>(lhs.m_Iterator - rhs);
 }
 
 template <typename TUIter, typename TUContainer>
@@ -234,7 +234,7 @@ RandomAccessIterator<TUIter, TUContainer> operator+(
         const typename RandomAccessIterator<TUIter, TUContainer>::difference_type lhs, 
         const RandomAccessIterator<TUIter, TUContainer>& rhs)
 {
-    return rhs + lhs;
+    return RandomAccessIterator<TUIter, TUContainer>(rhs + lhs);
 }
 
 template <typename TIter, typename TContainer>

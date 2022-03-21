@@ -61,6 +61,34 @@ struct add_rvalue_reference<const volatile void>
 };
 
 template <typename T>
+struct remove_const
+{
+    typedef T type;
+};
+
+template <typename T>
+struct remove_const<const T>
+{
+    typedef T type;
+};
+
+template <typename T>
+struct remove_volatile
+{
+    typedef T type;
+};
+
+template <typename T>
+struct remove_volatile<volatile T>
+{
+    typedef T type;
+};
+
+template <typename T>
+struct remove_cv : remove_volatile<typename remove_const<T>::type> /// metafunction forwarding!!!
+{};
+
+template <typename T>
 typename add_rvalue_reference<T>::type declval();
 
 template <typename From, typename To>
@@ -82,6 +110,50 @@ public:
 
 template <typename From, typename To>
 struct is_convertible : is_convertible_helper<From, To>
+{};
+
+template <typename>
+struct is_integral_helper : false_type
+{};
+
+template <>
+struct is_integral_helper<bool> : true_type
+{};
+
+template <>
+struct is_integral_helper<char> : true_type
+{};
+
+template <>
+struct is_integral_helper<char16_t> : true_type
+{};
+
+template <>
+struct is_integral_helper<char32_t> : true_type
+{};
+
+template <>
+struct is_integral_helper<wchar_t> : true_type
+{};
+
+template <>
+struct is_integral_helper<short> : true_type
+{};
+
+template <>
+struct is_integral_helper<int> : true_type
+{};
+
+template <>
+struct is_integral_helper<long> : true_type
+{};
+
+template <>
+struct is_integral_helper<long long> : true_type
+{};
+
+template <typename T>
+struct is_integral : is_integral_helper<typename remove_cv<T>::type>
 {};
 
 }

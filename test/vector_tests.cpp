@@ -1,5 +1,5 @@
-#include "vector.hpp"
-#include "gtest/gtest.h"
+#include "vector.h"
+#include <gtest/gtest.h>
 
 class VectorTests : public testing::Test
 {
@@ -47,6 +47,13 @@ TEST_F(VectorTests, Size)
 {
     ft::vector<int> ft_vec(std_vec.begin(), std_vec.end());
     ASSERT_EQ(ft_vec.size(), std_vec.size());
+}
+
+TEST_F(VectorTests, AssignmentOp)
+{
+    ft::vector<int> ft_vec(std_vec.begin(), std_vec.end());
+    v1 = ft_vec;
+    ASSERT_EQ(ft_vec, v1);
 }
 
 TEST_F(VectorTests, Capacity)

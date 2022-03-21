@@ -1,6 +1,6 @@
-#include "gtest/gtest.h"
+#include <gtest/gtest.h>
 #include "reverse_iter.h"
-#include "vector.hpp"
+#include "vector.h"
 
 #include <string>
 #include <vector>

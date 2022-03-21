@@ -45,6 +45,7 @@ public:
     vector(InputIterator begin, InputIterator end, const allocator_type& alloc = allocator_type());
 
     vector(const vector& other);
+    vector& operator=(const vector& other);
 
     ~vector();
 
@@ -165,6 +166,17 @@ vector<TType, TAllocator>::vector(const vector& other)
     {
         m_Allocator.construct(m_Data + i, other[i]);
     }
+}
+
+template <typename TType, typename TAllocator>
+vector<TType, TAllocator>& vector<TType, TAllocator>::operator=(const vector& other)
+{
+    m_Allocator = other.m_Allocator;
+    for (size_type i = 0; i < other.m_Size; ++i)
+    {
+        push_back(other[i]);
+    }
+    return *this;
 }
 
 template <typename TType, typename TAllocator>

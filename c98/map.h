@@ -78,7 +78,10 @@ public:
 
     map& operator=(const map& x)
     {
-        m_Tree = x.m_Tree;
+        if (&x != this)
+        {
+            m_Tree = x.m_Tree;
+        }
         return *this;
     }
 

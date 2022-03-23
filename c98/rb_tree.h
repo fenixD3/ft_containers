@@ -923,37 +923,37 @@ private:
 };
 
 //template <typename Key, typename Val, typename Compare, typename KeyExtract, typename Alloc>
-//inline bool operator==(const RbTree<Key, Val, Compare, KeyExtract, Alloc>& lhs, const RbTree<Key, Val, Compare, KeyExtract, Alloc>& rhs)
+//bool operator==(const RbTree<Key, Val, Compare, KeyExtract, Alloc>& lhs, const RbTree<Key, Val, Compare, KeyExtract, Alloc>& rhs)
 //{
 //    return lhs.size() == rhs.size() && equal(lhs.begin(), lhs.end(), rhs.begin());
 //}
 //
 //template <typename Key, typename Val, typename Compare, typename KeyExtract, typename Alloc>
-//inline bool operator!=(const RbTree<Key, Val, Compare, KeyExtract, Alloc>& lhs, const RbTree<Key, Val, Compare, KeyExtract, Alloc>& rhs)
+//bool operator!=(const RbTree<Key, Val, Compare, KeyExtract, Alloc>& lhs, const RbTree<Key, Val, Compare, KeyExtract, Alloc>& rhs)
 //{
 //    return !(lhs == rhs);
 //}
 //
 //template <typename Key, typename Val, typename Compare, typename KeyExtract, typename Alloc>
-//inline bool operator<(const RbTree<Key, Val, Compare, KeyExtract, Alloc>& lhs, const RbTree<Key, Val, Compare, KeyExtract, Alloc>& rhs)
+//bool operator<(const RbTree<Key, Val, Compare, KeyExtract, Alloc>& lhs, const RbTree<Key, Val, Compare, KeyExtract, Alloc>& rhs)
 //{
 //    return lexicographical_compare(lhs.begin(), lhs.end(), rhs.begin(), rhs.end());
 //}
 //
 //template <typename Key, typename Val, typename Compare, typename KeyExtract, typename Alloc>
-//inline bool operator>(const RbTree<Key, Val, Compare, KeyExtract, Alloc>& lhs, const RbTree<Key, Val, Compare, KeyExtract, Alloc>& rhs)
+//bool operator>(const RbTree<Key, Val, Compare, KeyExtract, Alloc>& lhs, const RbTree<Key, Val, Compare, KeyExtract, Alloc>& rhs)
 //{
 //    return rhs < lhs;
 //}
 //
 //template <typename Key, typename Val, typename Compare, typename KeyExtract, typename Alloc>
-//inline bool operator<=(const RbTree<Key, Val, Compare, KeyExtract, Alloc>& lhs, const RbTree<Key, Val, Compare, KeyExtract, Alloc>& rhs)
+//bool operator<=(const RbTree<Key, Val, Compare, KeyExtract, Alloc>& lhs, const RbTree<Key, Val, Compare, KeyExtract, Alloc>& rhs)
 //{
 //    return !(rhs < lhs);
 //}
 //
 //template <typename Key, typename Val, typename Compare, typename KeyExtract, typename Alloc>
-//inline bool operator>=(const RbTree<Key, Val, Compare, KeyExtract, Alloc>& lhs, const RbTree<Key, Val, Compare, KeyExtract, Alloc>& rhs)
+//bool operator>=(const RbTree<Key, Val, Compare, KeyExtract, Alloc>& lhs, const RbTree<Key, Val, Compare, KeyExtract, Alloc>& rhs)
 //{
 //    return !(lhs < rhs);
 //}

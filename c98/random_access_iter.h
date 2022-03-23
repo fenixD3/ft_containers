@@ -92,12 +92,12 @@ template <typename TUIter>
 RandomAccessIterator<TIter, TContainer>::RandomAccessIterator(const RandomAccessIterator<
         TUIter,
         typename enable_if<is_same<typename TContainer::pointer, TUIter>::value, TContainer>::type>& other)
-    : m_Iterator(other.m_Iterator)
+    : m_Iterator(other.operator->())
 {}
 
 template <typename TIter, typename TContainer>
 RandomAccessIterator<TIter, TContainer>::RandomAccessIterator(const RandomAccessIterator& other)
-        : m_Iterator(other.m_Iterator)
+    : m_Iterator(other.m_Iterator)
 {}
 
 template <typename TIter, typename TContainer>

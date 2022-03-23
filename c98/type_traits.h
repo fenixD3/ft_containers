@@ -156,4 +156,19 @@ template <typename T>
 struct is_integral : is_integral_helper<typename remove_cv<T>::type>
 {};
 
+template <bool Cond, typename True, typename False>
+struct conditional;
+
+template <typename True, typename False>
+struct conditional<true, True, False>
+{
+    typedef True type;
+};
+
+template <typename True, typename False>
+struct conditional<false, True, False>
+{
+    typedef False type;
+};
+
 }

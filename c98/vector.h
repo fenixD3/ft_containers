@@ -576,7 +576,7 @@ typename vector<TType, TAllocator>::iterator vector<TType, TAllocator>::erase(it
 template<typename TType, typename TAllocator>
 void vector<TType, TAllocator>::swap(vector& x)
 {
-    if (x == *this)
+    if (&x == this)
     {
         return;
     }

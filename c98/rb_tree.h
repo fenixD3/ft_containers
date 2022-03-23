@@ -3,6 +3,9 @@
 #include <memory>
 
 #include "iterator_traits.h"
+#include "reverse_iter.h"
+
+#include "algorithm.h"
 
 namespace ft
 {
@@ -31,9 +34,9 @@ public:
 public:
     RbTreeNode(Val value)
         : m_Color(RbTreeColor::RED)
-        , m_Parent(0)
-        , m_Left(0)
-        , m_Right(0)
+        , m_Parent(NULL)
+        , m_Left(NULL)
+        , m_Right(NULL)
         , m_Value(value)
         , m_IsLeft(true)
     {}
@@ -62,126 +65,64 @@ public:
     }
 
     ~RbTreeNode() {}
-
-    static node_ptr next_node(node_ptr node)
-    {
-        if (node == NULL)
-        {
-            node = RbTreeNode::get_min(node);
-        }
-        else if (node->m_Right)
-        {
-            node = node->m_Right;
-            while (node && node->m_Left)
-            {
-                node = node->m_Left;
-            }
-        }
-        else
-        {
-            while (node && node->m_Parent && !node->m_IsLeft)
-            {
-                node = node->m_Parent;
-            }
-            node = node->m_Parent;
-        }
-        return node;
-    }
-
-    static node_ptr prev_node(node_ptr node)
-    {
-        if (node == NULL)
-        {
-            node = RbTreeNode::get_max(node);
-        }
-        else if (node->m_Left)
-        {
-            node = node->m_Left;
-            while (node && node->m_Right)
-            {
-                node = node->m_Right;
-            }
-        }
-        else
-        {
-            while (node && node->m_Parent && node->m_IsLeft)
-            {
-                node = node->m_Parent;
-            }
-            node = node->m_Parent;
-        }
-        return node;
-    }
-
-private:
-    static node_ptr get_min(node_ptr node)
-    {
-        while (node != 0 && node->left != 0)
-        {
-            node = node->left;
-        }
-        return node;
-    }
-
-//    static const_node_ptr get_min(const_node_ptr node)
-//    {
-//        while (node != 0 && node->left != 0)
-//        {
-//            node = node->left;
-//        }
-//        return node;
-//    }
-
-    static node_ptr get_max(node_ptr node)
-    {
-        while (node != 0 && node->right != 0)
-        {
-            node = node->right;
-        }
-        return node;
-    }
-
-//    static const_node_ptr get_max(const_node_ptr node)
-//    {
-//        while (node != 0 && node->right != 0)
-//        {
-//            node = node->right;
-//        }
-//        return node;
-//    }
 };
 
-template <typename Val, bool IsConst>
+template <typename Key, typename Val, typename Compare, typename KeyExtract, typename Alloc>
+class RbTree;
+
+template <typename Key, typename Val, typename Compare, typename KeyExtract, typename Alloc>
 class RbTreeIterator
 {
+    typedef RbTree<Key, Val, Compare, KeyExtract, Alloc> tree_type;
 public:
     typedef bidirectional_iterator_tag iterator_category;
-    typedef typename iterator_traits<RbTreeIterator>::difference_type difference_type;
     typedef RbTreeNode<Val> node_type;
     typedef typename node_type::node_ptr node_ptr;
-    
+
     typedef Val value_type;
     typedef value_type& reference;
     typedef value_type* pointer;
+    typedef ptrdiff_t difference_type;
 
 private:
     node_ptr m_Node;
+    const tree_type *m_TreePtr;
 
 public:
-    RbTreeIterator(node_ptr node = NULL) : m_Node(node) {}
-    RbTreeIterator(const RbTreeIterator& other) : m_Node(other.m_Node) {}
+    RbTreeIterator(const tree_type *tree, node_ptr node = NULL) : m_Node(node), m_TreePtr(tree) {}
+    RbTreeIterator(const RbTreeIterator& other) : m_Node(other.base()), m_TreePtr(other.m_TreePtr) {}
     RbTreeIterator& operator=(const RbTreeIterator& other)
     {
         if (this != &other)
         {
-            m_Node = other.m_Node;
+            m_Node = other.base();
+            m_TreePtr = other.m_TreePtr;
         }
         return *this;
     }
 
     RbTreeIterator& operator++()
     {
-        m_Node = node_type::next_node(m_Node);
+        if (m_Node == NULL)
+        {
+            m_Node = m_TreePtr->get_min();
+        }
+        else if (m_Node->m_Right)
+        {
+            m_Node = m_Node->m_Right;
+            while (m_Node && m_Node->m_Left)
+            {
+                m_Node = m_Node->m_Left;
+            }
+        }
+        else
+        {
+            while (m_Node && m_Node->m_Parent && !m_Node->m_IsLeft)
+            {
+                m_Node = m_Node->m_Parent;
+            }
+            m_Node = m_Node->m_Parent;
+        }
         return *this;
     }
     
@@ -194,7 +135,26 @@ public:
 
     RbTreeIterator& operator--()
     {
-        m_Node = node_type::prev_node(m_Node);
+        if (m_Node == NULL)
+        {
+            m_Node = m_TreePtr->get_max();
+        }
+        else if (m_Node->m_Left)
+        {
+            m_Node = m_Node->m_Left;
+            while (m_Node && m_Node->m_Right)
+            {
+                m_Node = m_Node->m_Right;
+            }
+        }
+        else
+        {
+            while (m_Node && m_Node->m_Parent && m_Node->m_IsLeft)
+            {
+                m_Node = m_Node->m_Parent;
+            }
+            m_Node = m_Node->m_Parent;
+        }
         return *this;
     }
     
@@ -207,6 +167,16 @@ public:
     
     reference operator*() const { return m_Node->m_Value; }
     pointer operator->() const { return &(m_Node->m_Value); }
+
+    node_ptr base() const
+    {
+        return m_Node;
+    }
+
+    const tree_type *get_tree_ptr() const
+    {
+        return m_TreePtr;
+    }
     
     friend bool operator==(const RbTreeIterator &lhs, const RbTreeIterator &rhs)
     {
@@ -219,11 +189,143 @@ public:
     }
 };
 
+template <typename Key, typename Val, typename Compare, typename KeyExtract, typename Alloc>
+class RbTreeConstIterator
+{
+    typedef RbTree<Key, Val, Compare, KeyExtract, Alloc> tree_type;
+public:
+    typedef bidirectional_iterator_tag iterator_category;
+    typedef RbTreeNode<Val> node_type;
+    typedef typename node_type::const_node_ptr node_ptr;
+
+    typedef Val value_type;
+    typedef const value_type& reference;
+    typedef const value_type* pointer;
+    typedef ptrdiff_t difference_type;
+
+    typedef RbTreeIterator<Key, Val, Compare, KeyExtract, Alloc> iterator;
+
+private:
+    node_ptr m_Node;
+    const tree_type *m_TreePtr;
+
+public:
+    RbTreeConstIterator(const tree_type *tree, node_ptr node = NULL) : m_Node(node), m_TreePtr(tree) {}
+    RbTreeConstIterator(const iterator& other) : m_Node(other.base()), m_TreePtr(other.get_tree_ptr()) {}
+    RbTreeConstIterator& operator=(const iterator& other)
+    {
+        if (this != &other)
+        {
+            m_Node = other.base();
+            m_TreePtr = other.m_TreePtr;
+        }
+        return *this;
+    }
+
+    RbTreeConstIterator& operator++()
+    {
+        if (m_Node == NULL)
+        {
+            m_Node = m_TreePtr->get_min();
+        }
+        else if (m_Node->m_Right)
+        {
+            m_Node = m_Node->m_Right;
+            while (m_Node && m_Node->m_Left)
+            {
+                m_Node = m_Node->m_Left;
+            }
+        }
+        else
+        {
+            while (m_Node && m_Node->m_Parent && !m_Node->m_IsLeft)
+            {
+                m_Node = m_Node->m_Parent;
+            }
+            m_Node = m_Node->m_Parent;
+        }
+        return *this;
+    }
+
+    RbTreeConstIterator operator++(int)
+    {
+        RbTreeConstIterator old(*this);
+        ++(*this);
+        return old;
+    }
+
+    RbTreeConstIterator& operator--()
+    {
+        if (m_Node == NULL)
+        {
+            m_Node = m_TreePtr->get_max();
+        }
+        else if (m_Node->m_Left)
+        {
+            m_Node = m_Node->m_Left;
+            while (m_Node && m_Node->m_Right)
+            {
+                m_Node = m_Node->m_Right;
+            }
+        }
+        else
+        {
+            while (m_Node && m_Node->m_Parent && m_Node->m_IsLeft)
+            {
+                m_Node = m_Node->m_Parent;
+            }
+            m_Node = m_Node->m_Parent;
+        }
+        return *this;
+    }
+
+    RbTreeConstIterator operator--(int)
+    {
+        RbTreeConstIterator old(*this);
+        --(*this);
+        return old;
+    }
+
+    reference operator*() const { return m_Node->m_Value; }
+    pointer operator->() const { return &(m_Node->m_Value); }
+
+    node_ptr base() const
+    {
+        return m_Node;
+    }
+
+    friend bool operator==(const RbTreeConstIterator &lhs, const RbTreeConstIterator &rhs)
+    {
+        return lhs.base() == rhs.base();
+    }
+
+    friend bool operator!=(const RbTreeConstIterator &lhs, const RbTreeConstIterator &rhs)
+    {
+        return lhs.base() != rhs.base();
+    }
+};
+
+template <typename Key, typename Val, typename Compare, typename KeyExtract, typename Alloc>
+inline bool operator==(
+    const RbTreeIterator<Key, Val, Compare, KeyExtract, Alloc>& lhs, 
+    const RbTreeConstIterator<Key, Val, Compare, KeyExtract, Alloc>& rhs)
+{
+    return lhs.base() == rhs.base();
+}
+
+template <typename Key, typename Val, typename Compare, typename KeyExtract, typename Alloc>
+inline bool operator!=(
+    const RbTreeIterator<Key, Val, Compare, KeyExtract, Alloc>& lhs, 
+    const RbTreeConstIterator<Key, Val, Compare, KeyExtract, Alloc>& rhs)
+{
+    return lhs.base() != rhs.base();
+}
+
 template <typename Key, typename Val, typename Compare, typename KeyExtract, typename Alloc = std::allocator<Val> >
 class RbTree
 {
 private:
-    typedef Compare key_compare;
+    typedef Compare key_compare_type;
     typedef Alloc allocator_value_type;
 
     typedef RbTreeNode<Val> node_type;
@@ -232,18 +334,20 @@ private:
 public:
     typedef ptrdiff_t difference_type;
     typedef size_t size_type;
-    typedef RbTreeIterator<Val> iterator;
-    typedef RbTreeIterator<const Val> const_iterator; /// TODO ???
+    typedef RbTreeIterator<Key, Val, Compare, KeyExtract, Alloc> iterator;
+    typedef RbTreeConstIterator<Key, Val, Compare, KeyExtract, Alloc> const_iterator;
+    typedef ReverseIterator<iterator> reverse_iterator;
+    typedef ReverseIterator<const_iterator> const_reverse_iterator;
 
 private:
     typename node_type::node_ptr m_Root;
     size_type m_Size;
 
-    key_compare m_Comparator;
+    key_compare_type m_Comparator;
     node_allocator m_Allocator;
 
 public:
-    RbTree(const key_compare& comp, const allocator_value_type& alloc = allocator_value_type())
+    RbTree(const key_compare_type& comp, const allocator_value_type& alloc = allocator_value_type())
         : m_Root(NULL)
         , m_Size(0)
         , m_Comparator(comp)
@@ -259,7 +363,7 @@ public:
         if (other.m_Root != NULL)
         {
             m_Root = m_Allocator.allocate(1);
-            m_Allocator.allocate(m_Root, other.m_Root);
+            m_Allocator.construct(m_Root, *other.m_Root);
             copyTree(m_Root, other.m_Root);
         }
     }
@@ -271,7 +375,7 @@ public:
             if (other.m_Root != NULL)
             {
                 m_Root = m_Allocator.allocate(1);
-                m_Allocator.allocate(m_Root, other.m_Root);
+                m_Allocator.construct(m_Root, *other.m_Root);
                 copyTree(m_Root, other.m_Root);
             }
             else
@@ -287,24 +391,47 @@ public:
 
     ~RbTree()
     {
-        deleteTree();
-        m_Allocator.deallocate(m_Root, m_Size);
-        m_Root = NULL;
-        m_Size = 0;
+        deleteTree(m_Root);
+        if (m_Root != NULL)
+        {
+            m_Allocator.deallocate(m_Root, m_Size);
+            m_Root = NULL;
+            m_Size = 0;
+        }
     }
 
     void swap(RbTree &x)
     {
-        char buffer[sizeof(RbTree)];
-        memcpy(buffer, &x, sizeof(RbTree));
-        memcpy(reinterpret_cast<char *>(&x), this, sizeof(RbTree));
-        memcpy(reinterpret_cast<char *>(this), buffer, sizeof(RbTree));
+        if (&x == this)
+        {
+            return;
+        }
+
+        typename node_type::node_ptr root_tmp = x.m_Root;
+        size_type size_tmp = x.m_Size;
+        key_compare_type comparator_tmp = x.m_Comparator;
+        node_allocator allocator_tmp = x.m_Allocator;
+
+        x.m_Root = m_Root;
+        x.m_Size = m_Size;
+        x.m_Comparator = m_Comparator;
+        x.m_Allocator = m_Allocator;
+
+        m_Root = root_tmp;
+        m_Size = size_tmp;
+        m_Comparator = comparator_tmp;
+        m_Allocator = allocator_tmp;
+    }
+    
+    key_compare_type key_comp() const
+    {
+        return m_Comparator;
     }
 
     void clear()
     {
         deleteTree(m_Root);
-        m_Root = 0;
+        m_Root = NULL;
         m_Size = 0;
     }
 
@@ -318,6 +445,11 @@ public:
         return m_Allocator.max_size();
     }
 
+    bool empty() const
+    {
+        return m_Size == 0;
+    }
+
     typename node_type::node_ptr find(const Key& k) const
     {
         return find(m_Root, k);
@@ -327,71 +459,71 @@ public:
     {
         while (node)
         {
-            if (!m_Comparator(KeyExtract(node->m_Value), k) && !m_Comparator(k, KeyExtract(node->m_Value)))
+            if (!m_Comparator(KeyExtract()(node->m_Value), k) && !m_Comparator(k, KeyExtract()(node->m_Value)))
             {
-                iterator it(node, this);
-                iterator next(node, this);
-                for (--next; next.m_Node && (!m_Comparator(KeyExtract(*next), k) && !m_Comparator(k, KeyExtract(*next))); --next)
+                iterator it(this, node);
+                iterator next(this, node);
+                for (--next; next.base() && (!m_Comparator(KeyExtract()(*next), k) && !m_Comparator(k, KeyExtract()(*next))); --next)
+                {
                     --it;
-                return it.m_Node;
+                }
+                return it.base();
             }
-            if (!m_Comparator(KeyExtract(node->m_Value), k))
+            if (!m_Comparator(KeyExtract()(node->m_Value), k))
+            {
                 node = node->m_Left;
+            }
             else
+            {
                 node = node->m_Right;
+            }
         }
-        return nullptr;
+        return NULL;
     }
 
     typename node_type::node_ptr lower_bound(const Key& k) const
     {
-        iterator it(min(), this);
-        while (it.m_Node && m_Comparator(KeyExtract(*it), k))
+        iterator it(this, get_min());
+        while (it.base() && m_Comparator(KeyExtract()(*it), k))
+        {
             ++it;
-        return it.m_Node;
+        }
+        return it.base();
     }
 
     typename node_type::node_ptr upper_bound(const Key& k) const
     {
-        iterator it(min(), this);
-        while (it.m_Node && !m_Comparator(k, KeyExtract(*it)))
+        iterator it(this, get_min());
+        while (it.base() && !m_Comparator(k, KeyExtract()(*it)))
+        {
             ++it;
-        return it.m_Node;
-    }
-
-    size_type count(const Key& k) const
-    {
-        size_type count = 0;
-
-//        for (RbTreeIterator<Val, Compare> it(find(m_Root, k), this);
-//             it.m_Node && !m_Comparator(KeyExtract(*it), k) && !m_Comparator(k, KeyExtract(*it)); ++it)
-//            ++count;
-        return count;
+        }
+        return it.base();
     }
 
     typename node_type::node_ptr add(Val toAdd)
     {
-        typename node_type::node_ptr added;  // sending address to this pointer so that I can select it even with the recursive
+        typename node_type::node_ptr added = NULL;
 
         m_Root = add(NULL, m_Root, toAdd, true, &added);
         m_Root->m_Color = RbTreeColor::BLACK;
         return added;
     }
 
-    typename node_type::node_ptr add(iterator it, Val value) { return add(it.m_Node, value); }
+    typename node_type::node_ptr add(iterator it, Val value) { return add(it.base(), value); }
     typename node_type::node_ptr add(typename node_type::node_ptr preceding, Val value)
     {
         bool first = false;
-        iterator it(preceding, this);
-        while (it.m_Node)
+        iterator it(this, preceding);
+        while (it.base())
         {
-            if (m_Comparator(KeyExtract(value), KeyExtract(*it)))
-            {  // --> value < it
+            if (m_Comparator(KeyExtract()(value), KeyExtract()(*it)))
+            {
                 first = true;
                 --it;
             }
-            else if (m_Comparator(KeyExtract(*it), KeyExtract(value)))
-            {  // --> value > it
+            else if (m_Comparator(KeyExtract()(*it), KeyExtract()(value)))
+            {
                 if (first)
                     break;
                 ++it;
@@ -400,22 +532,21 @@ public:
             {
                 typename node_type::node_ptr added = m_Allocator.allocate(1);
                 {
-//                    added = new node_type(value, it.m_Node->m_Parent, it.m_Node->m_IsLeft);
                     m_Allocator.construct(added, value);
-                    added->m_Parent = it.m_Node->m_Parent;
-                    added->m_IsLeft = it.m_Node->m_IsLeft
+                    added->m_Parent = it.base()->m_Parent;
+                    added->m_IsLeft = it.base()->m_IsLeft;
                 }
                 if (added->m_Parent)
                     added->m_IsLeft ? added->m_Parent->m_Left = added : added->m_Parent->m_Right = added;
                 else
                     m_Root = added;
-                added->m_Left = it.m_Node->m_Left;
+                added->m_Left = it.base()->m_Left;
                 if (added->m_Left)
                     added->m_Left->m_Parent = added;
-                it.m_Node->m_Left = 0;
-                it.m_Node->m_IsLeft = false;
-                added->m_Right = it.m_Node;
-                it.m_Node->m_Parent = added;
+                it.base()->m_Left = NULL;
+                it.base()->m_IsLeft = false;
+                added->m_Right = it.base();
+                it.base()->m_Parent = added;
                 ++m_Size;
                 return added;
             }
@@ -423,7 +554,7 @@ public:
         return add(value);
     }
 
-    bool deleteKey(Key& k)
+    bool deleteKey(const Key& k)
     {
         if (!find(m_Root, k))
         {
@@ -433,8 +564,7 @@ public:
         {
             m_Size = 0;
             m_Allocator.destroy(m_Root);
-//            delete m_Root;
-            m_Root = nullptr;
+            m_Root = NULL;
             return true;
         }
         if (!isRed(m_Root->m_Left) && !isRed(m_Root->m_Right))
@@ -445,9 +575,9 @@ public:
         return true;
     }
 
-    typename node_type::node_ptr deleteKey(typename node_type::node_ptr x, Key& k)
+    typename node_type::node_ptr deleteKey(typename node_type::node_ptr x, const Key& k)
     {
-        if (m_Comparator(k, KeyExtract(x->m_Value)))
+        if (m_Comparator(k, KeyExtract()(x->m_Value)))
         {
             if (!isRed(x->m_Left) && x->m_Left && !isRed(x->m_Left->m_Left))
                 x = moveRedLeft(x);
@@ -457,19 +587,19 @@ public:
         {
             if (isRed(x->m_Left))
                 x = rotateRight(x);
-            if (!m_Comparator(KeyExtract(x->m_Value), k) && !x->m_Right)
-            {  // EQUAL
+            if (!m_Comparator(KeyExtract()(x->m_Value), k) && !x->m_Right)
+            {
                 --m_Size;
                 m_Allocator.destroy(x);
-//                delete x;
-                return 0;
+                return NULL;
             }
             if (!isRed(x->m_Right) && x->m_Right && !isRed(x->m_Right->m_Left))
                 x = moveRedRight(x);
-            if (!m_Comparator(KeyExtract(x->m_Value), k) && !m_Comparator(k, KeyExtract(x->m_Value)))
+            if (!m_Comparator(KeyExtract()(x->m_Value), k) && !m_Comparator(k, KeyExtract()(x->m_Value)))
             {
-                typename node_type::node_ptr h = min(x->m_Right);
-                x->m_Value = h->m_Value;
+                typename node_type::node_ptr h = get_min(x->m_Right);
+                const_cast<Key&>(x->m_Value.first) = h->m_Value.first;
+                x->m_Value.second = h->m_Value.second;
                 x->m_Right = deleteMin(x->m_Right);
             }
             else
@@ -478,20 +608,20 @@ public:
         return balance(x);
     }
 
-    typename node_type::node_ptr deleteKey(iterator it) { return deleteKey(it.m_Node); }
+    typename node_type::node_ptr deleteKey(iterator it) { return deleteKey(it.base()); }
     typename node_type::node_ptr deleteKey(typename node_type::node_ptr x)
     {
-        typename node_type::node_ptr ret = 0;
+        typename node_type::node_ptr ret = NULL;
         if (!x)
             return x;
         if (m_Size == 1)
-            m_Root = 0;
+            m_Root = NULL;
         else if (!x->m_Right)
         {
             if (!x->m_Parent)
             {
                 m_Root = x->m_Left;
-                m_Root->m_Parent = 0;
+                m_Root->m_Parent = NULL;
             }
             else
             {
@@ -505,23 +635,24 @@ public:
                     ret = x->m_Parent;
                 else
                 {
-                    iterator it(x, this);
+                    iterator it(this, x);
                     ++it;
-                    ret = it.m_Node;
+                    ret = it.base();
                 }
             }
         }
         else
+        {
             ret = eraseRight(x);
+        }
         --m_Size;
         m_Allocator.destroy(x);
-//        delete x;
         return ret;
     }
 
     typename node_type::node_ptr eraseRight(typename node_type::node_ptr x)
     {
-        typename node_type::node_ptr h = min(x->m_Right);
+        typename node_type::node_ptr h = get_min(x->m_Right);
 
         h->m_IsLeft ? h->m_Parent->m_Left = h->m_Right : h->m_Parent->m_Right = h->m_Right;
         if (h->m_Parent->m_Left)
@@ -539,13 +670,41 @@ public:
         else
             x->m_IsLeft ? h->m_Parent->m_Left = h : h->m_Parent->m_Right = h;
         if (x->m_Right)
-        {  // x->right wasn't h or it was but h had a right child
+        {
             h->m_Right = x->m_Right;
             h->m_Right->m_Parent = h;
         }
         h->m_Left = x->m_Left;
-        h->m_Left ? h->m_Left->m_Parent = h : 0;
+        h->m_Left ? h->m_Left->m_Parent = h : NULL;
         return h;
+    }
+
+    typename node_type::node_ptr get_min() const
+    {
+        return get_min(m_Root);
+    }
+
+    typename node_type::node_ptr get_min(typename node_type::node_ptr node) const
+    {
+        while (node != NULL && node->m_Left != NULL)
+        {
+            node = node->m_Left;
+        }
+        return node;
+    }
+
+    typename node_type::node_ptr get_max() const
+    {
+        return get_max(m_Root);
+    }
+
+    typename node_type::node_ptr get_max(typename node_type::node_ptr node) const
+    {
+        while (node != NULL && node->m_Right != NULL)
+        {
+            node = node->m_Right;
+        }
+        return node;
     }
 
 private:
@@ -555,35 +714,46 @@ private:
                                      bool left,
                                      typename node_type::node_ptr *added)
     {
-        if (x == 0)
+        if (x == NULL)
         {
             ++m_Size;
             *added = m_Allocator.allocate(1);
-//            *added = new node_type(value, parent, left);
             m_Allocator.construct(*added, value);
             (*added)->m_Parent = parent;
             (*added)->m_IsLeft = left;
             return *added;
         }
-        if (!m_Comparator(KeyExtract(x->m_Value), KeyExtract(value)) && !m_Comparator(KeyExtract(value), KeyExtract(x->m_Value))/* && allowMulti == false*/)	// ---> EQUAL
+        if (!m_Comparator(KeyExtract()(x->m_Value), KeyExtract()(value)) && !m_Comparator(KeyExtract()(value), KeyExtract()(x->m_Value)))
+        {
             *added = x;
-        else if (!m_Comparator(KeyExtract(value), KeyExtract(x->m_Value)))
+        }
+        else if (!m_Comparator(KeyExtract()(value), KeyExtract()(x->m_Value)))
+        {
             x->m_Right = add(x, x->m_Right, value, false, added);
+        }
         else
-            x->m_Left = add(x, x->m_Left, value, true, added);  // if comp gives false
+        {
+            x->m_Left = add(x, x->m_Left, value, true, added);
+        }
 
         if (isRed(x->m_Right) && !isRed(x->m_Left))
+        {
             x = rotateLeft(x);
+        }
         if (isRed(x->m_Left) && isRed(x->m_Left->m_Left))
+        {
             x = rotateRight(x);
+        }
         if (isRed(x->m_Left) && isRed(x->m_Right))
+        {
             colorFlip(x);
+        }
         return x;
     }
 
     void deleteMin()
     {
-        if (m_Root == 0)
+        if (m_Root == NULL)
             return;
         if (!isRed(m_Root->m_Left && !isRed(m_Root->m_Right)))
             m_Root->m_Color = RbTreeColor::RED;
@@ -596,11 +766,9 @@ private:
     {
         if (!h->m_Left)
         {
-            // std::cout << "delete no left child "  << h->m_Value << std::endl;
             --m_Size;
             m_Allocator.destroy(h);
-//            delete h;
-            return 0;
+            return NULL;
         }
         if (!isRed(h->m_Left) && !isRed(h->m_Left->m_Left))
             h = moveRedLeft(h);
@@ -610,8 +778,7 @@ private:
 
     void deleteMax()
     {
-        // if (m_Root == 0) throw
-        if (m_Root == 0)
+        if (m_Root == NULL)
             return;
         if (!isRed(m_Root->m_Left && !isRed(m_Root->m_Right)))
             m_Root->m_Color = RbTreeColor::RED;
@@ -625,12 +792,11 @@ private:
     {
         if (isRed(h->m_Left))
             h = rotateRight(h);
-        if (h->m_Right == 0)
+        if (h->m_Right == NULL)
         {
             --m_Size;
             m_Allocator.destroy(h);
-//            delete h;
-            return 0;
+            return NULL;
         }
         if (!isRed(h->m_Right) && !isRed(h->m_Right->m_Left))
             h = moveRedRight(h->m_Right);
@@ -641,9 +807,9 @@ private:
 
     void colorFlip(typename node_type::node_ptr node)
     {
-        node->m_Color = !node->m_Color;
-        node->m_Left->m_Color = !node->m_Left->m_Color;
-        node->m_Right->m_Color = !node->m_Right->m_Color;
+        node->m_Color = (node->m_Color == RbTreeColor::RED) ? RbTreeColor::BLACK : RbTreeColor::RED;
+        node->m_Left->m_Color = (node->m_Left->m_Color == RbTreeColor::RED) ? RbTreeColor::BLACK : RbTreeColor::RED;
+        node->m_Right->m_Color = (node->m_Right->m_Color == RbTreeColor::RED) ? RbTreeColor::BLACK : RbTreeColor::RED;
     }
 
     typename node_type::node_ptr rotateLeft(typename node_type::node_ptr h)
@@ -721,12 +887,11 @@ private:
 
     void deleteTree(typename node_type::node_ptr node)
     {
-        if (node == 0)
+        if (node == NULL)
             return;
         deleteTree(node->m_Left);
         deleteTree(node->m_Right);
         m_Allocator.destroy(node);
-//        delete node;
     }
 
     void copyTree(typename node_type::node_ptr dest, typename node_type::node_ptr src)
@@ -734,7 +899,6 @@ private:
         if (src->m_Left)
         {
             dest->m_Left = m_Allocator.allocate(1);
-//          dest->m_Left = new node_type(*src->m_Left, dest);
             m_Allocator.construct(dest->m_Left, *src->m_Left);
             dest->m_Left->m_Parent = dest;
 
@@ -743,7 +907,6 @@ private:
         if (src->m_Right)
         {
             dest->m_Right = m_Allocator.allocate(1);
-//            dest->m_Right = new node_type(*src->m_Right, dest);
             m_Allocator.construct(dest->m_Right, *src->m_Right);
             dest->m_Right->m_Parent = dest;
 
@@ -751,23 +914,48 @@ private:
         }
     }
 
-    size_t heigth()
+    bool isRed(typename node_type::node_ptr n)
     {
-        if (!m_Root)
-            return 0;
-        return height(m_Root) - 1;
-    }
-
-    size_t heigth(typename node_type::node_ptr node)
-    {
-        if (node == 0)
-            return 0;
-        size_t left = height(node->m_Left);
-        size_t right = height(node->m_Right);
-        if (left > right)
-            return left + 1;
-        return right + 1;
+        if (n == NULL)
+            return false;
+        return n->m_Color == RbTreeColor::RED;
     }
 };
+
+//template <typename Key, typename Val, typename Compare, typename KeyExtract, typename Alloc>
+//inline bool operator==(const RbTree<Key, Val, Compare, KeyExtract, Alloc>& lhs, const RbTree<Key, Val, Compare, KeyExtract, Alloc>& rhs)
+//{
+//    return lhs.size() == rhs.size() && equal(lhs.begin(), lhs.end(), rhs.begin());
+//}
+//
+//template <typename Key, typename Val, typename Compare, typename KeyExtract, typename Alloc>
+//inline bool operator!=(const RbTree<Key, Val, Compare, KeyExtract, Alloc>& lhs, const RbTree<Key, Val, Compare, KeyExtract, Alloc>& rhs)
+//{
+//    return !(lhs == rhs);
+//}
+//
+//template <typename Key, typename Val, typename Compare, typename KeyExtract, typename Alloc>
+//inline bool operator<(const RbTree<Key, Val, Compare, KeyExtract, Alloc>& lhs, const RbTree<Key, Val, Compare, KeyExtract, Alloc>& rhs)
+//{
+//    return lexicographical_compare(lhs.begin(), lhs.end(), rhs.begin(), rhs.end());
+//}
+//
+//template <typename Key, typename Val, typename Compare, typename KeyExtract, typename Alloc>
+//inline bool operator>(const RbTree<Key, Val, Compare, KeyExtract, Alloc>& lhs, const RbTree<Key, Val, Compare, KeyExtract, Alloc>& rhs)
+//{
+//    return rhs < lhs;
+//}
+//
+//template <typename Key, typename Val, typename Compare, typename KeyExtract, typename Alloc>
+//inline bool operator<=(const RbTree<Key, Val, Compare, KeyExtract, Alloc>& lhs, const RbTree<Key, Val, Compare, KeyExtract, Alloc>& rhs)
+//{
+//    return !(rhs < lhs);
+//}
+//
+//template <typename Key, typename Val, typename Compare, typename KeyExtract, typename Alloc>
+//inline bool operator>=(const RbTree<Key, Val, Compare, KeyExtract, Alloc>& lhs, const RbTree<Key, Val, Compare, KeyExtract, Alloc>& rhs)
+//{
+//    return !(lhs < rhs);
+//}
 
 }

@@ -8,7 +8,7 @@ class StackTests : public testing::Test
 {
 protected:
     ft::stack<int> st;
-std::pair<int, int> dd;
+    std::pair<int, int> dd;
     std::vector<int> vec_std = {1, 2, 3};
 };
 

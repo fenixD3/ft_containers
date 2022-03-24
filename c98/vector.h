@@ -281,7 +281,6 @@ public:
             {
                 m_Allocator.construct(new_data + i, m_Data[i - inserted_cnt]);
             }
-//            construct_elements(inserting_idx + 1, m_Size, new_data, m_Data);
 
             clear();
             m_Allocator.deallocate(m_Data, m_Capacity);
@@ -324,7 +323,6 @@ public:
             {
                 m_Allocator.construct(new_data + i, m_Data[i - inserted_cnt]);
             }
-//        construct_elements(inserting_idx + 1, m_Size, new_data, m_Data);
 
             clear();
             m_Allocator.deallocate(m_Data, m_Capacity);

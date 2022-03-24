@@ -4,9 +4,12 @@ project(test)
 
 set(CMAKE_CXX_STANDARD 17)
 
+add_executable(stress_tests stress_test.cpp)
+target_include_directories(stress_tests PRIVATE ${CMAKE_HOME_DIRECTORY}/c98)
+
 enable_testing()
 
-file(GLOB SOURCE ${PROJECT_SOURCE_DIR}/*.cpp)
+file(GLOB SOURCE ${PROJECT_SOURCE_DIR}/*tests.cpp)
 message(STATUS "test = ${SOURCE}")
 
 find_package(GTest REQUIRED)

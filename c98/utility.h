@@ -94,4 +94,18 @@ struct Select1st
     }
 };
 
+template <typename Type>
+struct Identity
+{
+    Type& operator()(Type& t) const
+    {
+        return t;
+    }
+
+    const Type& operator()(const Type& t) const
+    {
+        return t;
+    }
+};
+
 }

@@ -6,6 +6,7 @@
 #include "reverse_iter.h"
 
 #include "algorithm.h"
+#include "utility.h"
 
 namespace ft
 {
@@ -598,8 +599,7 @@ public:
             if (!m_Comparator(KeyExtract()(x->m_Value), k) && !m_Comparator(k, KeyExtract()(x->m_Value)))
             {
                 typename node_type::node_ptr h = get_min(x->m_Right);
-                const_cast<Key&>(x->m_Value.first) = h->m_Value.first;
-                x->m_Value.second = h->m_Value.second;
+                rewrite_value(x->m_Value, h->m_Value);
                 x->m_Right = deleteMin(x->m_Right);
             }
             else
@@ -810,6 +810,21 @@ private:
         node->m_Color = (node->m_Color == RbTreeColor::RED) ? RbTreeColor::BLACK : RbTreeColor::RED;
         node->m_Left->m_Color = (node->m_Left->m_Color == RbTreeColor::RED) ? RbTreeColor::BLACK : RbTreeColor::RED;
         node->m_Right->m_Color = (node->m_Right->m_Color == RbTreeColor::RED) ? RbTreeColor::BLACK : RbTreeColor::RED;
+    }
+
+    template <typename Type>
+    typename enable_if<is_same<Type, Key>::value>::type
+    rewrite_value(Type& val, Type& new_val)
+    {
+        val = new_val;
+    }
+
+    template <typename Type>
+    typename enable_if<!is_same<Type, Key>::value>::type
+    rewrite_value(Type& val, Type& new_val)
+    {
+        const_cast<Key&>(val.first) = new_val.first;
+        val.second = new_val.second;
     }
 
     typename node_type::node_ptr rotateLeft(typename node_type::node_ptr h)

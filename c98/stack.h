@@ -13,7 +13,7 @@ public:
     typedef TContainer container_type;
     typedef typename container_type::size_type size_type;
 
-private:
+protected:
     container_type m_Container;
 
 public:

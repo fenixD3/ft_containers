@@ -28,8 +28,6 @@ public:
 
     class value_compare
     {
-        // in C++98, it is required to inherit binary_function<value_type,value_type,bool>
-//        friend class map;
     protected:
         Compare m_Comp;
         explicit value_compare(Compare c) : m_Comp(c) {}  // constructed with map's comparison object

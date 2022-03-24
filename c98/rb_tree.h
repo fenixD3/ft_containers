@@ -34,7 +34,7 @@ public:
 
 public:
     RbTreeNode(Val value)
-        : m_Color(RbTreeColor::RED)
+        : m_Color(RED)
         , m_Parent(NULL)
         , m_Left(NULL)
         , m_Right(NULL)
@@ -507,7 +507,7 @@ public:
         typename node_type::node_ptr added = NULL;
 
         m_Root = add(NULL, m_Root, toAdd, true, &added);
-        m_Root->m_Color = RbTreeColor::BLACK;
+        m_Root->m_Color = BLACK;
         return added;
     }
 
@@ -807,9 +807,9 @@ private:
 
     void colorFlip(typename node_type::node_ptr node)
     {
-        node->m_Color = (node->m_Color == RbTreeColor::RED) ? RbTreeColor::BLACK : RbTreeColor::RED;
-        node->m_Left->m_Color = (node->m_Left->m_Color == RbTreeColor::RED) ? RbTreeColor::BLACK : RbTreeColor::RED;
-        node->m_Right->m_Color = (node->m_Right->m_Color == RbTreeColor::RED) ? RbTreeColor::BLACK : RbTreeColor::RED;
+        node->m_Color = (node->m_Color == RED) ? BLACK : RED;
+        node->m_Left->m_Color = (node->m_Left->m_Color == RED) ? BLACK : RED;
+        node->m_Right->m_Color = (node->m_Right->m_Color == RED) ? BLACK : RED;
     }
 
     template <typename Type>
@@ -842,7 +842,7 @@ private:
         x->m_Left = h;
         h->m_IsLeft = true;
         h->m_Parent = x;
-        h->m_Color = RbTreeColor::RED;
+        h->m_Color = RED;
         return x;
     }
 
@@ -861,7 +861,7 @@ private:
         x->m_Right = h;
         h->m_IsLeft = false;
         h->m_Parent = x;
-        h->m_Color = RbTreeColor::RED;
+        h->m_Color = RED;
         return x;
     }
 
@@ -933,7 +933,7 @@ private:
     {
         if (n == NULL)
             return false;
-        return n->m_Color == RbTreeColor::RED;
+        return n->m_Color == RED;
     }
 };
 

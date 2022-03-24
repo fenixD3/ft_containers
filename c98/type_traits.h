@@ -15,7 +15,7 @@ struct enable_if<true, ReturnType>
 template <bool Val>
 struct bool_constant
 {
-    typedef bool_constant<Val> type;
+    typedef bool_constant<Val> type; /// TODO why?
     static const bool value = Val;
 };
 

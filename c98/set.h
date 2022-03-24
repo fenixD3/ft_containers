@@ -4,14 +4,13 @@
 
 #include "rb_tree.h"
 #include "utility.h"
-//#include "functional.h"
-#include <functional>
+#include "functional.h"
 
 namespace ft
 {
 
 template <class T,
-          class Compare = std::less<T>,
+          class Compare = ft::less<T>,
           class Alloc = std::allocator<T>
 >
 class set

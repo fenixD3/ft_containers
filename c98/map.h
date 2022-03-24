@@ -3,14 +3,14 @@
 #include "rb_tree.h"
 #include "utility.h"
 #include "type_traits.h"
-//#include "functional.h"
+#include "functional.h"
 
 namespace ft
 {
 
 template <typename Key,                                      // map::key_type
            typename Val,                                       // map::mapped_type
-           typename Compare = std::less<Key>,                     // map::key_compare
+           typename Compare = ft::less<Key>,                     // map::key_compare
            typename Alloc = std::allocator<pair<const Key, Val> >    // map::allocator_type
 >
 class map

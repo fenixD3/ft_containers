@@ -5,22 +5,6 @@
 namespace ft
 {
 
-template <typename InputIterator1, typename InputIterator2>
-bool equal(InputIterator1 first1, InputIterator1 last1, InputIterator2 first2)
-{
-//    typedef typename ft::iterator_traits<InputIterator1>::value_type type;
-//    return equal(first1, last1, first2, equal_to<type>());
-
-    for ( ; first1 != last1; ++first1, ++first2)
-    {
-        if (*first1 != *first2)
-        {
-            return false;
-        }
-    }
-    return true;
-}
-
 template <typename InputIterator1, typename InputIterator2, typename BinaryPredicate>
 bool equal(InputIterator1 first1, InputIterator1 last1, InputIterator2 first2, BinaryPredicate pred)
 {
@@ -35,20 +19,10 @@ bool equal(InputIterator1 first1, InputIterator1 last1, InputIterator2 first2, B
 }
 
 template <typename InputIterator1, typename InputIterator2>
-bool lexicographical_compare(InputIterator1 first1, InputIterator1 last1, InputIterator2 first2, InputIterator2 last2)
+bool equal(InputIterator1 first1, InputIterator1 last1, InputIterator2 first2)
 {
-    for ( ; first1 != last1 || first2 != last2; ++first1, ++first2)
-    {
-        if (*first1 < *first2)
-        {
-            return true;
-        }
-        if (*first1 > *first2)
-        {
-            return false;
-        }
-    }
-    return first1 == last1 && first2 != last2;
+    typedef typename ft::iterator_traits<InputIterator1>::value_type type;
+    return ft::equal(first1, last1, first2, equal_to<type>());
 }
 
 template <typename InputIterator1, typename InputIterator2, typename Compare>
@@ -66,6 +40,13 @@ bool lexicographical_compare(InputIterator1 first1, InputIterator1 last1, InputI
         }
     }
     return first1 == last1 && first2 != last2;
+}
+
+template <typename InputIterator1, typename InputIterator2>
+bool lexicographical_compare(InputIterator1 first1, InputIterator1 last1, InputIterator2 first2, InputIterator2 last2)
+{
+    typedef typename ft::iterator_traits<InputIterator1>::value_type type;
+    return ft::equal(first1, last1, first2, less<type>());
 }
 
 }

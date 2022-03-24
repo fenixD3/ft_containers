@@ -33,14 +33,14 @@ struct equal_to
     }
 };
 
-//template <>
-//struct equal_to<void>
-//{
-//    template <typename T, typename U, typename Ret = decltype(declval<(T() == U())>())>
-//    Ret operator()(const T& lhs, const U& rhs) const
-//    {
-//        return lhs == rhs;
-//    }
-//};
+template <>
+struct equal_to<void>
+{
+    template <typename T, typename U, typename Ret = decltype(declval<(T() == U())>())>
+    Ret operator()(const T& lhs, const U& rhs) const
+    {
+        return lhs == rhs;
+    }
+};
 
 }
